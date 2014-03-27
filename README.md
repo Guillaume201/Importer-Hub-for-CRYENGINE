@@ -42,6 +42,6 @@ Meshes: fbx,dae
 
 License and source code
 -
-The Importer Hub for CRYENGINE is free for any use and open source under Creative Common license (CC BY 4.0).
+The Importer Hub for CRYENGINE is free for any use and open source under Creative Common license (CC BY 4.0): http://creativecommons.org/licenses/by/4.0/
 
 In short, you are free to do whatever you want as long as you leave the credits.
