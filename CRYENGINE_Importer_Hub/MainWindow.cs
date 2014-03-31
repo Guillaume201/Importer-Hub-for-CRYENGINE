@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace CRYENGINE_ImportHub
 {
@@ -13,6 +14,7 @@ namespace CRYENGINE_ImportHub
         private string m_customOutput;
         private string[] m_customSlotData;
         private bool m_isLinksManagementPreviouslyOpen = false;
+        private Image m_clipboardImage;
 
         const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v0.1";
 
@@ -72,7 +74,10 @@ namespace CRYENGINE_ImportHub
         {
             if (Clipboard.ContainsImage())
             {
-                Framework.Log("Image in clipboard: activate paste button");
+                Framework.Log("Image in clipboard: saving in memory");
+
+                m_clipboardImage = (Image)Clipboard.GetDataObject().GetData(DataFormats.Bitmap, true);
+
                 m_isImageInClipboard = true;
                 pasteTextureButton.Enabled = true;
             }
@@ -109,7 +114,8 @@ namespace CRYENGINE_ImportHub
                 {
                     string file = dialog.FileName;
                     Framework.Log("Save path selected from dialog: " + file);
-                    new CTextureFromClipboard(file, m_customOutput);
+
+                    new CTextureFromClipboard(file, m_customOutput, m_clipboardImage);
                 }
             }
         }

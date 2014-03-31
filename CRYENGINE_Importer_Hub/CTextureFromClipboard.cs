@@ -14,7 +14,7 @@ namespace CRYENGINE_ImportHub
     {
         private string m_tempFilePath;
 
-        public CTextureFromClipboard(string dialogPath, string customPath)
+        public CTextureFromClipboard(string dialogPath, string customPath, Image clipboardData)
         {
             //Allow filepaths with and without extensions
             if (Path.GetExtension(dialogPath) != "")
@@ -27,7 +27,7 @@ namespace CRYENGINE_ImportHub
             }
 
 
-            if (SaveTempBitmap())
+            if (SaveTempBitmap(clipboardData))
             {
                 new CTextureTiffConvert(m_tempFilePath);
                 deleteTempFile();
@@ -38,20 +38,16 @@ namespace CRYENGINE_ImportHub
             }
         }
 
-        private bool SaveTempBitmap()
+        private bool SaveTempBitmap(Image image)
         {
-            IDataObject data = Clipboard.GetDataObject();
-
-            if (data.GetDataPresent(DataFormats.Bitmap))
+            try
             {
-                Image image = (Image)data.GetData(DataFormats.Bitmap, true);
-
                 image.Save(m_tempFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
 
                 Framework.Log("(Clipbord) Temporary image saved: " + m_tempFilePath);
                 return true;
             }
-            else
+            catch (InvalidCastException e)
             {
                 return false;
             }
