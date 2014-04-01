@@ -137,7 +137,15 @@ namespace CRYENGINE_ImportHub
 
         public static void CRYENGINE_RC_Call(string commands, string logWhenFinished = null)
         {
-            string rcPath = GetCRYENGINELocation() + @"Bin32\RC\rc.exe";
+            string rcPathBin32 = GetCRYENGINELocation() + @"Bin32\RC\rc.exe";
+            string rcPathBin64 = GetCRYENGINELocation() + @"Bin64\RC\rc.exe";
+            string rcPath;
+
+            //If found, use the 64 bits Ressource Compiler
+            if (File.Exists(rcPathBin64))
+                rcPath = rcPathBin64;
+            else
+                rcPath = rcPathBin32;
 
             if (File.Exists(rcPath))
             {
