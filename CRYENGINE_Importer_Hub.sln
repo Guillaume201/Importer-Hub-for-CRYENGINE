@@ -5,14 +5,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRYENGINE_Importer_Hub", "C
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Debug|x64.ActiveCfg = Debug|x64
+		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Debug|x64.Build.0 = Debug|x64
+		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Release|x64.ActiveCfg = Release|x64
+		{D34D1EDF-7A5A-4303-AE00-B834475AEB2D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
