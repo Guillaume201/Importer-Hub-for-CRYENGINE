@@ -66,6 +66,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Magick.NET-x64">
+      <HintPath>..\Magick.NET-x64.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -86,6 +89,7 @@
     <Compile Include="CCustomSlot.cs" />
     <Compile Include="CRegistryManager.cs" />
     <Compile Include="CTextureFromClipboard.cs" />
+    <Compile Include="CTextureMagick.cs" />
     <Compile Include="CTextureTiffConvert.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="LinksManagementWindow.cs">

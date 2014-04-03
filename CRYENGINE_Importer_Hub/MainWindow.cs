@@ -16,7 +16,7 @@ namespace CRYENGINE_ImportHub
         private bool m_isLinksManagementPreviouslyOpen = false;
         private Image m_clipboardImage;
 
-        const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v0.1";
+        const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v0.2";
 
         private Framework m_framework;
         private CRegistryManager m_registryManager;
@@ -126,7 +126,7 @@ namespace CRYENGINE_ImportHub
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Title = "Open textures or meshes";
-            dialog.Filter = "Textures and Meshes|*.tif; *.jpg; *.png; *.bmp; *.fbx; *.dae";  //Supported files
+            dialog.Filter = "Textures and Meshes|*.tif; *.jpg; *.png; *.bmp; *.fbx; *.dae; *.tga; *.psd";  //Supported files
             dialog.Multiselect = true;
             if (dialog.ShowDialog() == DialogResult.OK)
             {

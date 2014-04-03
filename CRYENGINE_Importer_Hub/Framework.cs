@@ -37,6 +37,10 @@ namespace CRYENGINE_ImportHub
                     new CTextureTiffConvert(filePath);
                     break;
 
+                case "texture_magick":
+                    new CTextureMagick(filePath);
+                    break;
+
                 case "mesh":
                     Framework.CRYENGINE_RC_Call(filePath + " /refresh");
 
@@ -69,13 +73,10 @@ namespace CRYENGINE_ImportHub
                     return "texture";
                 case ".jpg":
                     return "texture";
-                /*case ".tga":
-                    return "texture";*/
                 case ".tif":
                     return "texture";
                 case ".bmp":
                     return "texture";
-
                 case ".PNG":
                     return "texture";
                 case ".JPG":
@@ -84,6 +85,16 @@ namespace CRYENGINE_ImportHub
                     return "texture";
                 case ".BMP":
                     return "texture";
+
+                //Supported textures via Magick
+                case ".tga":
+                    return "texture_magick";
+                case ".TGA":
+                    return "texture_magick";
+                case ".psd":
+                    return "texture_magick";
+                case ".PSD":
+                    return "texture_magick";
 
                 //Supported meshes extensions
                 case ".fbx":
