@@ -51,6 +51,7 @@ Also, you can use the [SDK_FOLDER] variable for retrieve the SDK path defined by
 Supported files
 --
 Textures: jpg, tga, psd, png, bmp, tif
+
 Meshes: fbx, dae
 
 License and source code
