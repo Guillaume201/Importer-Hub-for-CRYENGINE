@@ -34,7 +34,7 @@ namespace CRYENGINE_ImportHub
             }
             else
             {
-                Framework.ShowError("Unable to save the temporary file due to clipboard conversion", true);
+                Framework.ShowError("Unable to save the temporary file due to clipboard conversion");
             }
         }
 
