@@ -10,7 +10,13 @@ Download binaries
 https://github.com/Guillaume201/Importer-Hub-for-CRYENGINE/releases
 
 Be aware, some antivirus may be blocking this program. This is a false positive and you can review the source code here on GitHub. 
-You need to have the .NET Framework 4.5 installed in order to launch the program.
+
+Installation
+--
+Before installing the program, be sure to use a 64 bits version of Windows with the .NET Framework 4.5 installed.
+Once downloaded, extract all files in one place.
+
+Note that the Magick.NET-x64.dll file is only required for the conversion of PSD and TGA textures. This means that you can run the program without this dll if you don't need the support of those extensions.
 
 Key features
 --
@@ -44,13 +50,15 @@ Also, you can use the [SDK_FOLDER] variable for retrieve the SDK path defined by
 
 Supported files
 --
-Textures: bmp, tif, png, jpg
-Meshes: fbx,dae
+Textures: jpg, tga, psd, png, bmp, tif
+Meshes: fbx, dae
 
 License and source code
 --
 The Importer Hub for CRYENGINE is free for any use and open source under Creative Common license (CC BY 4.0).
 In short, you are free to do whatever you want as long as you leave the credits.
+
+This tool uses the Crytek's Resource Compiler and the Magick.NET library with the following license: http://magick.codeplex.com/license
 
 You can access to the full source code here on GitHub.
 
