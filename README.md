@@ -65,7 +65,7 @@ You can access to the full source code here on GitHub.
 
 Troubleshooting
 --
-Do not use spaces or non-ascii characters in the filenames and paths for your meshes and textures, the Resource Compiler don't support them.
+Do not use spaces or non-ascii characters in the filenames and paths of your meshes and textures, the Resource Compiler don't support them.
 
 ![alt tag](http://www.guillaume-puyal.com/uploads/Mar-2014/ImporterHub_v0-1_screen.png)
 
