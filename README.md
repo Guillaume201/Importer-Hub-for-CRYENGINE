@@ -13,7 +13,7 @@ Be aware, some antivirus may be blocking this program. This is a false positive 
 
 Installation
 --
-Before installing the program, be sure to use a 64 bits version of Windows with the .NET Framework 4.5 installed.
+Before installing the program, be sure to use a 64 bits version of Windows with the .NET Framework 4.5 and the Visual C++ Redistributable 2012 installed.
 Once downloaded, extract all files in one place.
 
 Note that the Magick.NET-x64.dll file is only required for the conversion of PSD and TGA textures. This means that you can run the program without this dll if you don't need the support of those extensions.
