@@ -166,7 +166,18 @@ namespace CRYENGINE_ImportHub
 
                 Framework.Log("Beginning RC call: " + commands);
 
-                var process = Process.Start(rcPath, commands);
+                Process process = new Process();
+                process.StartInfo.FileName = rcPath;
+                process.StartInfo.Arguments = commands;
+                //process.StartInfo.RedirectStandardOutput = true;
+
+                #if !DEBUG
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                process.StartInfo.UseShellExecute = false;
+                #endif
+
+                process.Start();
                 Framework.Log("RC call send");
 
                 process.WaitForExit();
