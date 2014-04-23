@@ -17,7 +17,6 @@ namespace CRYENGINE_ImportHub
         public CUpdateNotification(string version)
         {
             m_final_url = UPDATE_CHECK_URL + "?v=" + version;
-            //TODO: verif
 
             Framework.Log("Beginning update check");
             GetRequest();
