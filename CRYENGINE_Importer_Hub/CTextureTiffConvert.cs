@@ -55,8 +55,6 @@ namespace CRYENGINE_ImportHub
         private string m_fileName;
         private string m_convertedFilePath;
 
-        Thread tiffConvertThread;
-
         public CTextureTiffConvert(string filePath)
         {
             m_filePath = filePath;
@@ -69,7 +67,7 @@ namespace CRYENGINE_ImportHub
 
                 TiffConvertThread threadHandle = new TiffConvertThread(filePath);
 
-                tiffConvertThread = new Thread(new ThreadStart(threadHandle.Convert));
+                Thread tiffConvertThread = new Thread(new ThreadStart(threadHandle.Convert));
                 tiffConvertThread.Start();
 
                 tiffConvertThread.Join();
