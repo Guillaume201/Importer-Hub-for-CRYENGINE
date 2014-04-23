@@ -16,7 +16,8 @@ namespace CRYENGINE_ImportHub
         private bool m_isLinksManagementPreviouslyOpen = false;
         private Image m_clipboardImage;
 
-        const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v0.2";
+        const string APP_VERSION = "0.3";
+        const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v" + APP_VERSION;
 
         private Framework m_framework;
         private CRegistryManager m_registryManager;
@@ -47,7 +48,28 @@ namespace CRYENGINE_ImportHub
             SetCustomSlots();
 
             this.Text = APP_TITLE_NAME;
+
             Framework.Log(APP_TITLE_NAME + " ready!");
+        }
+
+
+        //After form load: BackgroundWorker for Update check
+        private void MainWindow_Shown(object sender, EventArgs e)
+        {
+            System.ComponentModel.BackgroundWorker bw = new System.ComponentModel.BackgroundWorker();
+            bw.WorkerSupportsCancellation = true;
+            bw.WorkerReportsProgress = true;
+            bw.DoWork += new System.ComponentModel.DoWorkEventHandler(bw_DoWork);
+
+            bw.RunWorkerAsync();
+        }
+
+        private void bw_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            System.ComponentModel.BackgroundWorker worker = sender as System.ComponentModel.BackgroundWorker;
+
+            new CUpdateNotification(APP_VERSION);
+            worker.CancelAsync();
         }
 
 
@@ -69,15 +91,11 @@ namespace CRYENGINE_ImportHub
         }
 
 
-        //Clipboard functions
         private void MainWindow_Activated(object sender, EventArgs e)
         {
+            //Clipboard functions
             if (Clipboard.ContainsImage())
             {
-                Framework.Log("Image in clipboard: saving in memory");
-
-                m_clipboardImage = (Image)Clipboard.GetDataObject().GetData(DataFormats.Bitmap, true);
-
                 m_isImageInClipboard = true;
                 pasteTextureButton.Enabled = true;
             }
@@ -101,6 +119,7 @@ namespace CRYENGINE_ImportHub
 
         private void pasteTextureButton_Click(object sender, EventArgs e)
         {
+            //Clipboard functions
             if (m_isImageInClipboard)
             {
                 SaveFileDialog dialog = new SaveFileDialog();
@@ -110,6 +129,9 @@ namespace CRYENGINE_ImportHub
                 if (m_customOutput != null && Directory.Exists(m_customOutput))
                     dialog.InitialDirectory = m_customOutput;
 
+                Framework.Log("Image in clipboard: saving in memory");
+                m_clipboardImage = (Image)Clipboard.GetDataObject().GetData(DataFormats.Bitmap, true);
+
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     string file = dialog.FileName;
@@ -117,6 +139,8 @@ namespace CRYENGINE_ImportHub
 
                     new CTextureFromClipboard(file, m_customOutput, m_clipboardImage);
                 }
+
+                m_clipboardImage.Dispose();
             }
         }
 

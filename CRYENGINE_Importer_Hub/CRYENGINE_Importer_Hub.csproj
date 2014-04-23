@@ -91,6 +91,7 @@
     <Compile Include="CTextureFromClipboard.cs" />
     <Compile Include="CTextureMagick.cs" />
     <Compile Include="CTextureTiffConvert.cs" />
+    <Compile Include="CUpdateNotification.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="LinksManagementWindow.cs">
       <SubType>Form</SubType>
