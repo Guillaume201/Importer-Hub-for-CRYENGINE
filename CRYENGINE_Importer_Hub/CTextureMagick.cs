@@ -18,7 +18,6 @@ namespace CRYENGINE_ImportHub
         {
             m_filePath = filePath;
             m_fileName = Path.GetFileName(filePath);
-            m_tempFilePath = Path.GetDirectoryName(m_filePath) + @"\" + Path.GetFileNameWithoutExtension(m_filePath) + ".bmp";
 
             if (!File.Exists("Magick.NET-x64.dll"))
             {
@@ -40,6 +39,17 @@ namespace CRYENGINE_ImportHub
             {
                 using (MagickImage image = new MagickImage(m_filePath))
                 {
+                    //Use PNG if the image have an alpha channel
+                    if (image.HasAlpha)
+                    {
+                        m_tempFilePath = Path.GetDirectoryName(m_filePath) + @"\" + Path.GetFileNameWithoutExtension(m_filePath) + ".png";
+                        Framework.Log("Alpha channel found, using PNG");
+                    }
+                    else
+                    {
+                        m_tempFilePath = Path.GetDirectoryName(m_filePath) + @"\" + Path.GetFileNameWithoutExtension(m_filePath) + ".bmp";
+                    }
+
                     image.Write(m_tempFilePath);
 
                     Framework.Log("(Magick) Temporary image saved: " + m_tempFilePath);
