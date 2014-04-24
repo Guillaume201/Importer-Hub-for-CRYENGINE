@@ -16,6 +16,8 @@ Installation
 Before installing the program, be sure to use a 64 bits version of Windows with the .NET Framework 4.5 and the Visual C++ Redistributable 2012 installed.
 Once downloaded, extract all files in one place.
 
+Also, be sure to have set your CRYENGINE build path in the Settings Manager. You can find more informations on the official documentation here: http://docs.cryengine.com/display/SD...ttings+Manager
+
 Note that the Magick.NET-x64.dll file is only required for the conversion of PSD and TGA textures. This means that you can run the program without this dll if you don't need the support of those extensions.
 
 Key features
