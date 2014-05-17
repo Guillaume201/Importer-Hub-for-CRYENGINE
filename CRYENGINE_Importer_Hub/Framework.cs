@@ -57,7 +57,7 @@ namespace CRYENGINE_ImportHub
                     break;
             }
 
-            //Custom path call delete temp file
+            //If custom path call delete temp file
             if (customPath != null)
                 customPathObj.DeleteTempFile();
         }
@@ -123,7 +123,7 @@ namespace CRYENGINE_ImportHub
                 {
                     if (!Directory.Exists(value))
                     {
-                        Framework.ShowError("The CRYENGINE path from the registry not exist (try to use the Settings Manager)", true);
+                        Framework.ShowError("The CRYENGINE path from the registry not exist\nBe sure to have set your CRYENGINE build path in the Settings Manager under <CESDK>/Tools/SettingsMgr.exe", true);
                         return null;
                     }
                     else
@@ -136,7 +136,7 @@ namespace CRYENGINE_ImportHub
                 }
                 else
                 {
-                    ShowError("Unable to find the CRYENGINE path from the registry (try to use the Settings Manager)", true);
+                    ShowError("Unable to find the CRYENGINE path from the registry.\nBe sure to have set your CRYENGINE build path in the Settings Manager under <CESDK>/Tools/SettingsMgr.exe", true);
                     return null;
                 }
             }
