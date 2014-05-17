@@ -87,7 +87,14 @@ namespace CRYENGINE_ImportHub
 
         private void CallRC()
         {
-            Framework.CRYENGINE_RC_Call(m_convertedFilePath + " /refresh /userdialog=1", "File " + m_fileName + " succefully send to the Ressource Compiler at " + m_convertedFilePath);
+            string userdialogCmd;
+
+            if (Framework.IsCryTifDialogRequested())
+                userdialogCmd = " /userdialog=1";
+            else
+                userdialogCmd = null;
+
+            Framework.CRYENGINE_RC_Call(m_convertedFilePath + " /refresh" + userdialogCmd, "File " + m_fileName + " succefully send to the Ressource Compiler at " + m_convertedFilePath);
         }
     }
 }

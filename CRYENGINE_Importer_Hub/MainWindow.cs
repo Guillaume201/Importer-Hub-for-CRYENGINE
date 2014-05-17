@@ -16,7 +16,7 @@ namespace CRYENGINE_ImportHub
         private bool m_isLinksManagementPreviouslyOpen = false;
         private Image m_clipboardImage;
 
-        const string APP_VERSION = "0.3";
+        const string APP_VERSION = "0.4";
         const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v" + APP_VERSION;
 
         private Framework m_framework;
@@ -26,7 +26,7 @@ namespace CRYENGINE_ImportHub
         {
             InitializeComponent();
 
-            m_framework = new Framework(consoleTextbox);
+            m_framework = new Framework(consoleTextbox, showCryTif);
             m_registryManager = new CRegistryManager();
 
             this.AllowDrop = true;

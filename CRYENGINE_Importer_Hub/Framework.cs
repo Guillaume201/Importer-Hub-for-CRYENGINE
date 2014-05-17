@@ -10,10 +10,12 @@ namespace CRYENGINE_ImportHub
     {
         public static string cryengineLocation;
         public static RichTextBox consoleControler;
+        private static CheckBox cryTifCheckbox;
 
-        public Framework(RichTextBox console)
+        public Framework(RichTextBox console, CheckBox cryTifCheckbox)
         {
             Framework.consoleControler = console;
+            Framework.cryTifCheckbox = cryTifCheckbox;
 
             Framework.Log("Init Framework");
         }
@@ -192,6 +194,11 @@ namespace CRYENGINE_ImportHub
             {
                 Framework.ShowError("Unable to find RC.exe", true);
             }
+        }
+
+        public static bool IsCryTifDialogRequested()
+        {
+            return cryTifCheckbox.Checked;
         }
 
         public static void ShowError(string error, bool isFatal = false)

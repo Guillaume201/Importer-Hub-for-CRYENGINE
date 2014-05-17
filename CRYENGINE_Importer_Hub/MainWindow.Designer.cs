@@ -30,6 +30,7 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.showCryTif = new System.Windows.Forms.CheckBox();
             this.browseFolderButton = new System.Windows.Forms.Button();
             this.customPath = new System.Windows.Forms.TextBox();
             this.useCustomOutput = new System.Windows.Forms.CheckBox();
@@ -69,6 +70,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.showCryTif);
             this.groupBox1.Controls.Add(this.browseFolderButton);
             this.groupBox1.Controls.Add(this.customPath);
             this.groupBox1.Controls.Add(this.useCustomOutput);
@@ -78,7 +80,21 @@
             this.groupBox1.Size = new System.Drawing.Size(339, 70);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Output folder";
+            this.groupBox1.Text = "Options";
+            // 
+            // showCryTif
+            // 
+            this.showCryTif.AutoSize = true;
+            this.showCryTif.Checked = true;
+            this.showCryTif.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showCryTif.Location = new System.Drawing.Point(224, 19);
+            this.showCryTif.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+            this.showCryTif.Name = "showCryTif";
+            this.showCryTif.Size = new System.Drawing.Size(114, 17);
+            this.showCryTif.TabIndex = 8;
+            this.showCryTif.Text = "Show CryTif dialog";
+            this.showCryTif.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.showCryTif.UseVisualStyleBackColor = true;
             // 
             // browseFolderButton
             // 
@@ -403,6 +419,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.CheckBox showCryTif;
     }
 }
 
