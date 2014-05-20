@@ -44,8 +44,11 @@ namespace CRYENGINE_ImportHub
             else
                 customPath.Text = m_registryManager.m_customPathInput;
 
+            showCryTif.Checked = m_registryManager.m_useCryTifDialog;
+
             m_customSlotData = CRegistryManager.GetCustomSlots();
             SetCustomSlots();
+
 
             this.Text = APP_TITLE_NAME;
 
@@ -226,7 +229,7 @@ namespace CRYENGINE_ImportHub
         //Save settings on app close
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            CRegistryManager.SaveAllSettings(customPath.Text);
+            CRegistryManager.SaveAllSettings(customPath.Text, showCryTif.Checked);
         }
 
 

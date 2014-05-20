@@ -13,6 +13,8 @@ namespace CRYENGINE_ImportHub
         const string SHORT_KEY_PATH = @"Software\CRYENGINE_ImportHub\Settings";
 
         public string m_customPathInput { get; set; }
+        public bool m_useCryTifDialog { get; set; }
+
         public static string[] m_customSlots = new string[7];
 
         public CRegistryManager()
@@ -25,6 +27,7 @@ namespace CRYENGINE_ImportHub
             RegistryKey testKey = Registry.CurrentUser.OpenSubKey(SHORT_KEY_PATH);
             if (testKey != null)
             {
+                UpdateKeys();
                 GetAllValues();
             }
             else
@@ -41,10 +44,32 @@ namespace CRYENGINE_ImportHub
 
             m_customPathInput = (string)Registry.GetValue(FULL_KEY_PATH, "CustomPathInput", null);
 
+            var tempCryTifVar = (string)Registry.GetValue(FULL_KEY_PATH, "UseCryTifDialog", null);
+            if (tempCryTifVar == "True")
+                m_useCryTifDialog = true;
+            else
+                m_useCryTifDialog = false;
+
+
             for (int i = 1; i <= 6; i++)
             {
                 m_customSlots[i] = (string)Registry.GetValue(FULL_KEY_PATH, "CustomSlot" + i, null);
             }
+        }
+
+        private void UpdateKeys()
+        {
+            var update = false;
+
+            //v0.3 to 0.4
+            if ((string)Registry.GetValue(FULL_KEY_PATH, "UseCryTifDialog", null) == null)
+            {
+                Registry.SetValue(FULL_KEY_PATH, "UseCryTifDialog", "True");
+                update = true;
+            }
+
+            if (update)
+                Framework.Log("Registry keys updated");
         }
 
         private void CreateKeys()
@@ -52,6 +77,7 @@ namespace CRYENGINE_ImportHub
             Framework.Log("Registry keys not found: beginning creation");
 
             Registry.SetValue(FULL_KEY_PATH, "CustomPathInput", "");
+            Registry.SetValue(FULL_KEY_PATH, "UseCryTifDialog", "True");
 
             Registry.SetValue(FULL_KEY_PATH, "CustomSlot1", "SDK Folder~[SDK_FOLDER]~");
             Registry.SetValue(FULL_KEY_PATH, "CustomSlot2", @"Sandbox Editor (x64)~[SDK_FOLDER]bin64\Editor.exe~");
@@ -65,11 +91,12 @@ namespace CRYENGINE_ImportHub
             GetAllValues();
         }
 
-        public static void SaveAllSettings(string CustomPathInput)
+        public static void SaveAllSettings(string customPathInput, bool isUseCryTifDialog)
         {
             Framework.Log("Save settings on the registry");
 
-            Registry.SetValue(FULL_KEY_PATH, "CustomPathInput", CustomPathInput);
+            Registry.SetValue(FULL_KEY_PATH, "CustomPathInput", customPathInput);
+            Registry.SetValue(FULL_KEY_PATH, "UseCryTifDialog", isUseCryTifDialog);
 
             Framework.Log("Settings saved");
         }
