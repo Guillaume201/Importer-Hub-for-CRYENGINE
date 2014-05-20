@@ -23,10 +23,15 @@ Note that the Magick.NET-x64.dll file is only required for the conversion of PSD
 Key features
 --
 Import files with a simple drag and drop
+
 Import textures from the clipboard
+
 Specify a custom output folder
+
 Custom links allowing the launch of exe, files, folders and web pages with command line arguments
+
 Settings stored after the application close
+
 Multiple file import
 
 Assets import
