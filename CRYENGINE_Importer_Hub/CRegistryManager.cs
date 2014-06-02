@@ -33,6 +33,7 @@ namespace CRYENGINE_ImportHub
             else
             {
                 CreateKeys();
+                GetAllValues();
             }
         }
 
@@ -87,8 +88,6 @@ namespace CRYENGINE_ImportHub
             Registry.SetValue(FULL_KEY_PATH, "CustomSlot6", "");
 
             Framework.Log("Registry keys created succefully");
-
-            GetAllValues();
         }
 
         public static void SaveAllSettings(string customPathInput, bool isUseCryTifDialog)
