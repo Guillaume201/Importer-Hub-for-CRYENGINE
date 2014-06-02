@@ -133,6 +133,11 @@ namespace CRYENGINE_ImportHub
                         Framework.cryengineLocation = value + @"\";
 
                         Framework.Log("CRYENGINE path find at: " + value);
+                        
+                        //Show a warning in the console if spaces detected in the path
+                        if (value.Contains(" "))
+                            Framework.Log("WARNING: Spaces detected in our CRYENGINE build path. This may cause some issues with CryTif.");
+
                         return value + @"\";
                     }
                 }
