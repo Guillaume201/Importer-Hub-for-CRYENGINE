@@ -87,7 +87,7 @@ namespace CRYENGINE_ImportHub
 
         private void CallRC()
         {
-            Framework.CRYENGINE_RC_Call(m_convertedFilePath + " /refresh" + UserDialogCmd(), "File " + m_fileName + " succefully send to the Ressource Compiler at " + m_convertedFilePath);
+            Framework.CRYENGINE_RC_Call(m_convertedFilePath + " /refresh" + UserDialogCmd() + GetAdditionalCompressionPreset(), "File " + m_fileName + " succefully send to the Ressource Compiler at " + m_convertedFilePath);
         }
 
         private string UserDialogCmd()
@@ -100,6 +100,24 @@ namespace CRYENGINE_ImportHub
             {
                 return null;
             }
+        }
+
+        private string GetAdditionalCompressionPreset()
+        {
+            var fileName = Path.GetFileNameWithoutExtension(m_filePath);
+
+            if (fileName.Substring(fileName.Length - 5) == "_spec")
+                return " /preset=Specular_highQ";
+
+            else if (fileName.Substring(fileName.Length - 5) == "_ddna")
+                return " /preset=NormalmapWithGlossInAlpha_highQ";
+
+            /*else if (fileName.Substring(fileName.Length - 5) == "_diff")
+                return " /preset=Diffuse_highQ";*/
+
+            else
+                return null;
+
         }
     }
 }
