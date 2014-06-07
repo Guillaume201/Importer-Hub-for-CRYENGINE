@@ -106,18 +106,24 @@ namespace CRYENGINE_ImportHub
         {
             var fileName = Path.GetFileNameWithoutExtension(m_filePath);
 
-            if (fileName.Substring(fileName.Length - 5) == "_spec")
-                return " /preset=Specular_highQ";
+            if (fileName.Length > 4)
+            {
+                if (fileName.Substring(fileName.Length - 5) == "_spec")
+                    return " /preset=Specular_highQ";
 
-            else if (fileName.Substring(fileName.Length - 5) == "_ddna")
-                return " /preset=NormalmapWithGlossInAlpha_highQ";
+                else if (fileName.Substring(fileName.Length - 5) == "_ddna")
+                    return " /preset=NormalmapWithGlossInAlpha_highQ";
 
-            /*else if (fileName.Substring(fileName.Length - 5) == "_diff")
-                return " /preset=Diffuse_highQ";*/
+                else if (fileName.Substring(fileName.Length - 5) == "_diff")
+                    return " /preset=Diffuse_highQ";
 
+                else
+                    return null;
+            }
             else
+            {
                 return null;
-
+            }
         }
     }
 }
