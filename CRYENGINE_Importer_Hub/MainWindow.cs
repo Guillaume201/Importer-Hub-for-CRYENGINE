@@ -128,6 +128,7 @@ namespace CRYENGINE_ImportHub
                 SaveFileDialog dialog = new SaveFileDialog();
                 dialog.Title = "Set path and texture name";
                 dialog.CheckPathExists = true;
+                dialog.Filter = "Textures|*.tif; *.dds";
 
                 if (m_customOutput != null && Directory.Exists(m_customOutput))
                     dialog.InitialDirectory = m_customOutput;
