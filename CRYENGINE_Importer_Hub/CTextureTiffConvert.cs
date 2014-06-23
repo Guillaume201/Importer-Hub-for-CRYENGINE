@@ -54,12 +54,14 @@ namespace CRYENGINE_ImportHub
         private string m_filePath;
         private string m_fileName;
         private string m_convertedFilePath;
+        private bool m_isSilentMode;
 
-        public CTextureTiffConvert(string filePath)
+        public CTextureTiffConvert(string filePath, bool isSilentMode = false)
         {
             m_filePath = filePath;
             m_fileName = Path.GetFileName(filePath);
             m_convertedFilePath = Path.GetDirectoryName(m_filePath) + @"\" + Path.GetFileNameWithoutExtension(m_filePath) + ".tif";
+            m_isSilentMode = isSilentMode;
 
             if (Path.GetExtension(filePath) != ".tif")
             {
@@ -87,12 +89,20 @@ namespace CRYENGINE_ImportHub
 
         private void CallRC()
         {
+            //Fix CE 3.6 /refresh command
+            var ddsFilePath = Path.GetDirectoryName(m_convertedFilePath) + @"\" + Path.GetFileNameWithoutExtension(m_convertedFilePath) + ".dds";
+
+            if (File.Exists(ddsFilePath))
+                Framework.Log("DDS file found, deleting");
+                File.Delete(ddsFilePath);
+
+
             Framework.CRYENGINE_RC_Call(m_convertedFilePath + " /refresh" + UserDialogCmd() + GetAdditionalCompressionPreset(), "File " + m_fileName + " succefully send to the Ressource Compiler at " + m_convertedFilePath);
         }
 
         private string UserDialogCmd()
         {
-            if (Framework.IsCryTifDialogRequested())
+            if (Framework.IsCryTifDialogRequested() && !m_isSilentMode)
             {
                 return " /userdialog=1";
             }
