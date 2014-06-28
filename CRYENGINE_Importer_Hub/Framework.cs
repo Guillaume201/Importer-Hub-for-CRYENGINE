@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace CRYENGINE_ImportHub
 {
@@ -11,6 +12,14 @@ namespace CRYENGINE_ImportHub
         public static string cryengineLocation;
         public static RichTextBox consoleControler;
         private static CheckBox cryTifCheckbox;
+        public static bool m_lockVisualConsole = false;
+
+        //WindowFocus Specific
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindowAsync(HandleRef hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr WindowHandle);
+        public const int SW_RESTORE = 3;    //MAXIMISE = 3, RESTORE = 9
 
         public Framework(RichTextBox console, CheckBox cryTifCheckbox)
         {
@@ -178,11 +187,11 @@ namespace CRYENGINE_ImportHub
                 process.StartInfo.Arguments = commands;
                 //process.StartInfo.RedirectStandardOutput = true;
 
-                #if !DEBUG
+                //#if !DEBUG
                 process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 process.StartInfo.UseShellExecute = false;
-                #endif
+                //#endif
 
                 process.Start();
                 Framework.Log("RC call send");
@@ -206,6 +215,33 @@ namespace CRYENGINE_ImportHub
             return cryTifCheckbox.Checked;
         }
 
+        public static bool IsFileLocked(string filePath)
+        {
+            try
+            {
+                using (File.Open(filePath, FileMode.Open)){}
+            }
+            catch (IOException e)
+            {
+                var errorCode = Marshal.GetHRForException(e) & ((1 << 16) - 1);
+
+                return errorCode == 32 || errorCode == 33;
+            }
+
+            return false;
+        }
+
+        public static void FocusProcess(string procName)
+        {
+            Process[] objProcesses = System.Diagnostics.Process.GetProcessesByName(procName); if (objProcesses.Length > 0)
+            {
+                IntPtr hWnd = IntPtr.Zero;
+                hWnd = objProcesses[0].MainWindowHandle;
+                ShowWindowAsync(new HandleRef(null, hWnd), SW_RESTORE);
+                SetForegroundWindow(objProcesses[0].MainWindowHandle);
+            }
+        }
+
         public static void ShowError(string error, bool isFatal = false)
         {
             Framework.Log("ERROR: " + error);
@@ -226,10 +262,13 @@ namespace CRYENGINE_ImportHub
         {
             Console.WriteLine(msg);
 
-            //Write in visual console
-            Framework.consoleControler.Text = Framework.consoleControler.Text + "\n" + msg;
-            Framework.consoleControler.SelectionStart = Framework.consoleControler.Text.Length;
-            Framework.consoleControler.ScrollToCaret();
+            if (!Framework.m_lockVisualConsole)
+            {
+                //Write in visual console
+                Framework.consoleControler.Text = Framework.consoleControler.Text + "\n" + msg;
+                Framework.consoleControler.SelectionStart = Framework.consoleControler.Text.Length;
+                Framework.consoleControler.ScrollToCaret();
+            }
         }
     }
 }

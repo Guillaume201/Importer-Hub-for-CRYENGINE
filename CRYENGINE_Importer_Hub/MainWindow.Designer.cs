@@ -35,7 +35,6 @@
             this.customPath = new System.Windows.Forms.TextBox();
             this.useCustomOutput = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.browseFilesButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -53,8 +52,12 @@
             this.manageButton = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.quixelSuiteLive = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -75,7 +78,7 @@
             this.groupBox1.Controls.Add(this.customPath);
             this.groupBox1.Controls.Add(this.useCustomOutput);
             this.groupBox1.ForeColor = System.Drawing.Color.White;
-            this.groupBox1.Location = new System.Drawing.Point(15, 306);
+            this.groupBox1.Location = new System.Drawing.Point(15, 292);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(339, 70);
             this.groupBox1.TabIndex = 6;
@@ -138,23 +141,11 @@
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.Color.DarkGray;
-            this.label4.Location = new System.Drawing.Point(221, 626);
+            this.label4.Location = new System.Drawing.Point(221, 666);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(58, 13);
             this.label4.TabIndex = 15;
             this.label4.Text = "Created by";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.Color.DarkGray;
-            this.label5.Location = new System.Drawing.Point(185, 641);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(172, 13);
-            this.label5.TabIndex = 17;
-            this.label5.Text = "Use the Crytek\'s Resource Compiler";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // browseFilesButton
             // 
@@ -175,7 +166,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(171, 118);
+            this.label2.Location = new System.Drawing.Point(171, 119);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(25, 21);
             this.label2.TabIndex = 3;
@@ -186,7 +177,7 @@
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(171, 206);
+            this.label3.Location = new System.Drawing.Point(170, 202);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(25, 21);
             this.label3.TabIndex = 5;
@@ -198,7 +189,7 @@
             this.pasteTextureButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.pasteTextureButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pasteTextureButton.ForeColor = System.Drawing.Color.White;
-            this.pasteTextureButton.Location = new System.Drawing.Point(15, 233);
+            this.pasteTextureButton.Location = new System.Drawing.Point(14, 229);
             this.pasteTextureButton.Name = "pasteTextureButton";
             this.pasteTextureButton.Size = new System.Drawing.Size(339, 54);
             this.pasteTextureButton.TabIndex = 4;
@@ -215,8 +206,9 @@
             this.consoleTextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(42)))), ((int)(((byte)(49)))), ((int)(((byte)(65)))));
             this.consoleTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.consoleTextbox.DetectUrls = false;
+            this.consoleTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.consoleTextbox.ForeColor = System.Drawing.Color.White;
-            this.consoleTextbox.Location = new System.Drawing.Point(12, 545);
+            this.consoleTextbox.Location = new System.Drawing.Point(12, 585);
             this.consoleTextbox.Name = "consoleTextbox";
             this.consoleTextbox.ReadOnly = true;
             this.consoleTextbox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
@@ -231,9 +223,9 @@
             this.customSlotButton2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.customSlotButton2.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.customSlotButton2.ForeColor = System.Drawing.Color.White;
-            this.customSlotButton2.Location = new System.Drawing.Point(132, 396);
+            this.customSlotButton2.Location = new System.Drawing.Point(132, 459);
             this.customSlotButton2.Name = "customSlotButton2";
-            this.customSlotButton2.Size = new System.Drawing.Size(109, 47);
+            this.customSlotButton2.Size = new System.Drawing.Size(109, 38);
             this.customSlotButton2.TabIndex = 9;
             this.customSlotButton2.Text = "Custom slot";
             this.customSlotButton2.UseVisualStyleBackColor = false;
@@ -246,9 +238,9 @@
             this.customSlotButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.customSlotButton1.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.customSlotButton1.ForeColor = System.Drawing.Color.White;
-            this.customSlotButton1.Location = new System.Drawing.Point(15, 396);
+            this.customSlotButton1.Location = new System.Drawing.Point(15, 459);
             this.customSlotButton1.Name = "customSlotButton1";
-            this.customSlotButton1.Size = new System.Drawing.Size(109, 47);
+            this.customSlotButton1.Size = new System.Drawing.Size(109, 38);
             this.customSlotButton1.TabIndex = 8;
             this.customSlotButton1.Text = "Custom slot";
             this.customSlotButton1.UseVisualStyleBackColor = false;
@@ -261,9 +253,9 @@
             this.customSlotButton3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.customSlotButton3.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.customSlotButton3.ForeColor = System.Drawing.Color.White;
-            this.customSlotButton3.Location = new System.Drawing.Point(248, 396);
+            this.customSlotButton3.Location = new System.Drawing.Point(248, 459);
             this.customSlotButton3.Name = "customSlotButton3";
-            this.customSlotButton3.Size = new System.Drawing.Size(109, 47);
+            this.customSlotButton3.Size = new System.Drawing.Size(109, 38);
             this.customSlotButton3.TabIndex = 10;
             this.customSlotButton3.Text = "Custom slot";
             this.customSlotButton3.UseVisualStyleBackColor = false;
@@ -276,9 +268,9 @@
             this.customSlotButton6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.customSlotButton6.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.customSlotButton6.ForeColor = System.Drawing.Color.White;
-            this.customSlotButton6.Location = new System.Drawing.Point(248, 450);
+            this.customSlotButton6.Location = new System.Drawing.Point(248, 503);
             this.customSlotButton6.Name = "customSlotButton6";
-            this.customSlotButton6.Size = new System.Drawing.Size(109, 47);
+            this.customSlotButton6.Size = new System.Drawing.Size(109, 38);
             this.customSlotButton6.TabIndex = 13;
             this.customSlotButton6.Text = "Custom slot";
             this.customSlotButton6.UseVisualStyleBackColor = false;
@@ -291,9 +283,9 @@
             this.customSlotButton5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.customSlotButton5.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.customSlotButton5.ForeColor = System.Drawing.Color.White;
-            this.customSlotButton5.Location = new System.Drawing.Point(132, 450);
+            this.customSlotButton5.Location = new System.Drawing.Point(132, 503);
             this.customSlotButton5.Name = "customSlotButton5";
-            this.customSlotButton5.Size = new System.Drawing.Size(109, 47);
+            this.customSlotButton5.Size = new System.Drawing.Size(109, 38);
             this.customSlotButton5.TabIndex = 12;
             this.customSlotButton5.Text = "Custom slot";
             this.customSlotButton5.UseVisualStyleBackColor = false;
@@ -306,9 +298,9 @@
             this.customSlotButton4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.customSlotButton4.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.customSlotButton4.ForeColor = System.Drawing.Color.White;
-            this.customSlotButton4.Location = new System.Drawing.Point(15, 450);
+            this.customSlotButton4.Location = new System.Drawing.Point(15, 503);
             this.customSlotButton4.Name = "customSlotButton4";
-            this.customSlotButton4.Size = new System.Drawing.Size(109, 47);
+            this.customSlotButton4.Size = new System.Drawing.Size(109, 38);
             this.customSlotButton4.TabIndex = 11;
             this.customSlotButton4.Text = "Custom slot";
             this.customSlotButton4.UseVisualStyleBackColor = false;
@@ -320,7 +312,7 @@
             this.manageButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageButton.Font = new System.Drawing.Font("Segoe UI", 7.5F);
             this.manageButton.ForeColor = System.Drawing.Color.White;
-            this.manageButton.Location = new System.Drawing.Point(261, 508);
+            this.manageButton.Location = new System.Drawing.Point(261, 547);
             this.manageButton.Name = "manageButton";
             this.manageButton.Size = new System.Drawing.Size(96, 23);
             this.manageButton.TabIndex = 14;
@@ -332,7 +324,7 @@
             // 
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.LinkColor = System.Drawing.Color.DarkGray;
-            this.linkLabel1.Location = new System.Drawing.Point(275, 626);
+            this.linkLabel1.Location = new System.Drawing.Point(275, 666);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(82, 13);
             this.linkLabel1.TabIndex = 16;
@@ -351,13 +343,51 @@
             this.pictureBox1.TabIndex = 18;
             this.pictureBox1.TabStop = false;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.DarkGray;
+            this.label5.Location = new System.Drawing.Point(185, 681);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(172, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Use the Crytek\'s Resource Compiler";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // quixelSuiteLive
+            // 
+            this.quixelSuiteLive.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(41)))), ((int)(((byte)(53)))));
+            this.quixelSuiteLive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.quixelSuiteLive.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.quixelSuiteLive.ForeColor = System.Drawing.Color.White;
+            this.quixelSuiteLive.Location = new System.Drawing.Point(10, 22);
+            this.quixelSuiteLive.Name = "quixelSuiteLive";
+            this.quixelSuiteLive.Size = new System.Drawing.Size(113, 28);
+            this.quixelSuiteLive.TabIndex = 19;
+            this.quixelSuiteLive.Text = "Quixel Suite DDO";
+            this.quixelSuiteLive.UseVisualStyleBackColor = false;
+            this.quixelSuiteLive.Click += new System.EventHandler(this.quixelSuiteLive_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.quixelSuiteLive);
+            this.groupBox2.ForeColor = System.Drawing.Color.White;
+            this.groupBox2.Location = new System.Drawing.Point(15, 381);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(342, 60);
+            this.groupBox2.TabIndex = 20;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Texturing Tools Connexion (experimental)";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(34)))), ((int)(((byte)(44)))));
             this.CausesValidation = false;
-            this.ClientSize = new System.Drawing.Size(369, 663);
+            this.ClientSize = new System.Drawing.Size(369, 700);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.label4);
@@ -388,6 +418,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -417,9 +448,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.CheckBox showCryTif;
+        private System.Windows.Forms.Label label5;
+        public System.Windows.Forms.Button quixelSuiteLive;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
 

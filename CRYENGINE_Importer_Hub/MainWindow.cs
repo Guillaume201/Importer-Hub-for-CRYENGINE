@@ -16,11 +16,12 @@ namespace CRYENGINE_ImportHub
         private bool m_isLinksManagementPreviouslyOpen = false;
         private Image m_clipboardImage;
 
-        const string APP_VERSION = "0.4";
+        const string APP_VERSION = "0.5 - DEV";
         const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v" + APP_VERSION;
 
         private Framework m_framework;
         private CRegistryManager m_registryManager;
+        private QuixelSuiteSetupDialog m_quixelSuiteDialog;
 
         public MainWindow()
         {
@@ -59,12 +60,14 @@ namespace CRYENGINE_ImportHub
         //After form load: BackgroundWorker for Update check
         private void MainWindow_Shown(object sender, EventArgs e)
         {
+            #if !DEBUG
             System.ComponentModel.BackgroundWorker bw = new System.ComponentModel.BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.WorkerReportsProgress = true;
             bw.DoWork += new System.ComponentModel.DoWorkEventHandler(bw_DoWork);
 
             bw.RunWorkerAsync();
+            #endif
         }
 
         private void bw_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -322,6 +325,29 @@ namespace CRYENGINE_ImportHub
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("http://www.guillaume-puyal.com/");
+        }
+
+        //Quixel Suite live
+        private void quixelSuiteLive_Click(object sender, EventArgs e)
+        {
+            if (quixelSuiteLive.ForeColor != System.Drawing.Color.Red)
+            {
+                m_quixelSuiteDialog = new QuixelSuiteSetupDialog(quixelSuiteLive);
+
+                Dock = DockStyle.Fill;
+                if (!Application.OpenForms.OfType<QuixelSuiteSetupDialog>().Any())
+                {
+                    m_quixelSuiteDialog.Show();
+                }
+            }
+            else
+            {
+                m_quixelSuiteDialog.Stop();
+                m_quixelSuiteDialog.Dispose();
+
+                quixelSuiteLive.Text = "Quixel Suite DDO";
+                quixelSuiteLive.ForeColor = System.Drawing.Color.White;
+            }
         }
     }
 }
