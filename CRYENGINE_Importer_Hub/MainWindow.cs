@@ -16,7 +16,7 @@ namespace CRYENGINE_ImportHub
         private bool m_isLinksManagementPreviouslyOpen = false;
         private Image m_clipboardImage;
 
-        const string APP_VERSION = "0.5 - DEV";
+        const string APP_VERSION = "0.5";
         const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v" + APP_VERSION;
 
         private Framework m_framework;
@@ -34,6 +34,7 @@ namespace CRYENGINE_ImportHub
             this.DragEnter += new DragEventHandler(MainWindow_DragEnter);
             this.DragDrop += new DragEventHandler(MainWindow_DragDrop);
 
+            this.Text = APP_TITLE_NAME;
             #if DEBUG
             this.TopMost = false;
             this.Text = APP_TITLE_NAME + " - DEV";
@@ -49,9 +50,6 @@ namespace CRYENGINE_ImportHub
 
             m_customSlotData = CRegistryManager.GetCustomSlots();
             SetCustomSlots();
-
-
-            this.Text = APP_TITLE_NAME;
 
             Framework.Log(APP_TITLE_NAME + " ready!");
         }
@@ -347,6 +345,7 @@ namespace CRYENGINE_ImportHub
 
                 quixelSuiteLive.Text = "Quixel Suite DDO";
                 quixelSuiteLive.ForeColor = System.Drawing.Color.White;
+                quixelSuiteLive.Width = 113;
             }
         }
     }

@@ -54,6 +54,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>Bin64\Release\</OutputPath>
@@ -88,6 +89,7 @@
   <ItemGroup>
     <Compile Include="CCustomPath.cs" />
     <Compile Include="CCustomSlot.cs" />
+    <Compile Include="CQuixelSuiteLiveConvert.cs" />
     <Compile Include="CRegistryManager.cs" />
     <Compile Include="CTextureFromClipboard.cs" />
     <Compile Include="CTextureMagick.cs" />
@@ -108,6 +110,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuixelSuiteSetupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QuixelSuiteSetupDialog.Designer.cs">
+      <DependentUpon>QuixelSuiteSetupDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -127,6 +135,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="QuixelSuiteSetupDialog.resx">
+      <DependentUpon>QuixelSuiteSetupDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resource1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>

@@ -77,8 +77,9 @@ namespace CRYENGINE_ImportHub
 
                     this.Close();
 
-                    m_manWindowDDOButton.Text = "Stop";
+                    m_manWindowDDOButton.Text = "Stop DDO Connexion";
                     m_manWindowDDOButton.ForeColor = System.Drawing.Color.Red;
+                    m_manWindowDDOButton.Width = 140;
 
                     Framework.FocusProcess("Photoshop");
                 }
