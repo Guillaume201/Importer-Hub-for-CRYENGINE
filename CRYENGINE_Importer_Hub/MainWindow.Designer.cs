@@ -39,9 +39,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.pasteTextureButton = new System.Windows.Forms.Button();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.consoleTextbox = new System.Windows.Forms.RichTextBox();
             this.customSlotButton2 = new System.Windows.Forms.Button();
             this.customSlotButton1 = new System.Windows.Forms.Button();
@@ -196,10 +193,6 @@
             this.pasteTextureButton.Text = "Paste texture from clipboard";
             this.pasteTextureButton.UseVisualStyleBackColor = false;
             this.pasteTextureButton.Click += new System.EventHandler(this.pasteTextureButton_Click);
-            // 
-            // openFileDialog
-            // 
-            this.openFileDialog.FileName = "openFileDialog";
             // 
             // consoleTextbox
             // 
@@ -430,11 +423,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button pasteTextureButton;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.TextBox customPath;
         private System.Windows.Forms.CheckBox useCustomOutput;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.Button browseFolderButton;
         public System.Windows.Forms.RichTextBox consoleTextbox;
         private System.Windows.Forms.Button manageButton;
