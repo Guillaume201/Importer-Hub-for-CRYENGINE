@@ -89,15 +89,27 @@ namespace CRYENGINE_ImportHub
 
         private void CallRC()
         {
-            //Fix CE 3.6 /refresh command
+            //Fix CE 3.6 /refresh command - Launch BackgroundWorker for DeleteDDS
+            System.ComponentModel.BackgroundWorker bw = new System.ComponentModel.BackgroundWorker();
+            bw.WorkerSupportsCancellation = true;
+            bw.WorkerReportsProgress = true;
+            bw.DoWork += new System.ComponentModel.DoWorkEventHandler(DeleteDDS);
+
+            bw.RunWorkerAsync();
+
+            Framework.CRYENGINE_RC_Call(m_convertedFilePath + " /refresh" + UserDialogCmd() + GetAdditionalCompressionPreset(), "File " + m_fileName + " succefully send to the Ressource Compiler at " + m_convertedFilePath);
+        }
+
+        private void DeleteDDS(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
             var ddsFilePath = Path.GetDirectoryName(m_convertedFilePath) + @"\" + Path.GetFileNameWithoutExtension(m_convertedFilePath) + ".dds";
 
             if (File.Exists(ddsFilePath))
-                Framework.Log("DDS file found, deleting");
+            {
+                while (!Framework.IsFileLocked(ddsFilePath)) ;    //Wait until the source file is unlocked
                 File.Delete(ddsFilePath);
-
-
-            Framework.CRYENGINE_RC_Call(m_convertedFilePath + " /refresh" + UserDialogCmd() + GetAdditionalCompressionPreset(), "File " + m_fileName + " succefully send to the Ressource Compiler at " + m_convertedFilePath);
+                Framework.Log("DDS file found, deleting");
+            }
         }
 
         private string UserDialogCmd()
