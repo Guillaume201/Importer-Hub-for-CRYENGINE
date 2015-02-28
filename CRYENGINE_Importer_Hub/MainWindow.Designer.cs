@@ -327,9 +327,9 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.ErrorImage = global::CRYENGINE_Importer_Hub.Properties.Resources.border;
-            this.pictureBox1.Image = global::CRYENGINE_Importer_Hub.Properties.Resources.border;
-            this.pictureBox1.InitialImage = global::CRYENGINE_Importer_Hub.Properties.Resources.border;
+            this.pictureBox1.ErrorImage = global::CRYENGINE_ImportHub.Properties.Resources.border;
+            this.pictureBox1.Image = global::CRYENGINE_ImportHub.Properties.Resources.border;
+            this.pictureBox1.InitialImage = global::CRYENGINE_ImportHub.Properties.Resources.border;
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(348, 108);
@@ -400,7 +400,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = global::CRYENGINE_Importer_Hub.Resource1.CEI;
+            this.Icon = global::CRYENGINE_ImportHub.Resource1.CEI;
             this.MaximizeBox = false;
             this.Name = "MainWindow";
             this.Text = "CRYENGINE Quick Import";

@@ -1,55 +1,70 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
-
+﻿//-----------------------------------------------------------------------
+// <copyright file="Framework.cs" company="Guillaume Puyal">
+//  The Importer Hub for CRYENGINE is free for any use and open source
+//  under Creative Common license (CC BY 4.0).
+//
+//  In short, you are free to do whatever you want
+//  as long as you leave the credits.
+//
+//  This tool uses the Crytek's Resource Compiler and the Magick.NET
+//  library with the following license: http:// magick.codeplex.com/license
+//  You can access to the full source code on GitHub.
+// </copyright>
+//-----------------------------------------------------------------------
 namespace CRYENGINE_ImportHub
 {
-    class Framework
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+    using Microsoft.Win32;
+
+    internal class Framework
     {
         public static string cryengineLocation;
         public static RichTextBox consoleControler;
         private static CheckBox cryTifCheckbox;
-        public static bool m_lockVisualConsole = false;
+        public static bool LockVisualConsole = false;
 
-        //WindowFocus Specific
+        // WindowFocus Specific
         [DllImport("user32.dll")]
         public static extern bool ShowWindowAsync(HandleRef hWnd, int nCmdShow);
+
         [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr WindowHandle);
-        public const int SW_RESTORE = 3;    //MAXIMISE = 3, RESTORE = 9
+
+        public const int SW_RESTORE = 3;    // MAXIMISE = 3, RESTORE = 9
 
         public Framework(RichTextBox console, CheckBox cryTifCheckbox)
         {
             Framework.consoleControler = console;
             Framework.cryTifCheckbox = cryTifCheckbox;
-
             Framework.Log("Init Framework");
         }
 
         public static void BeginImport(string filePath, string customPath)
         {
-            //Custom path support
-            CCustomPath customPathObj = new CCustomPath(customPath);
+            // Custom path support
+            var customPathObj = new CustomPath(customPath);
 
-            if (customPath != null && customPath != "")
+            if (!string.IsNullOrEmpty(customPath))
             {
-                string tPath = customPathObj.ProcessFinalPath(filePath);
-                if (tPath != null)
+                var tPath = customPathObj.ProcessFinalPath(filePath);
+                if (!string.IsNullOrEmpty(tPath))
+                {
                     filePath = tPath;
+                }
             }
-
 
             switch (GetConversionType(filePath))
             {
                 case "texture":
-                    new CTextureTiffConvert(filePath);
+                    new TextureTiffConvert(filePath);
                     break;
 
                 case "texture_magick":
-                    new CTextureMagick(filePath);
+                    new TextureMagick(filePath);
                     break;
 
                 case "mesh":
@@ -68,9 +83,11 @@ namespace CRYENGINE_ImportHub
                     break;
             }
 
-            //If custom path call delete temp file
+            // If custom path call delete temp file
             if (customPath != null)
+            {
                 customPathObj.DeleteTempFile();
+            }
         }
 
         public static string GetConversionType(string filePath)
@@ -79,50 +96,61 @@ namespace CRYENGINE_ImportHub
 
             switch (fileExtension)
             {
-                //Supported textures extensions
+                // Supported textures extensions
                 case ".png":
                     return "texture";
+
                 case ".jpg":
                     return "texture";
+
                 case ".tif":
                     return "texture";
+
                 case ".bmp":
                     return "texture";
+
                 case ".PNG":
                     return "texture";
+
                 case ".JPG":
                     return "texture";
+
                 case ".TIF":
                     return "texture";
+
                 case ".BMP":
                     return "texture";
 
-                //Supported textures via Magick
+                // Supported textures via Magick
                 case ".tga":
                     return "texture_magick";
+
                 case ".TGA":
                     return "texture_magick";
+
                 case ".psd":
                     return "texture_magick";
+
                 case ".PSD":
                     return "texture_magick";
 
-                //Supported meshes extensions
+                // Supported meshes extensions
                 case ".fbx":
                     return "mesh";
+
                 case ".dae":
                     return "mesh";
 
                 case ".FBX":
                     return "mesh";
+
                 case ".DAE":
                     return "mesh";
 
                 default:
-                    ShowError("Unsuported file type: " + fileExtension);
+                    ShowError("Unsuported file type: {0}", false, fileExtension);
                     return null;
             }
-
         }
 
         public static string GetCRYENGINELocation()
@@ -142,8 +170,8 @@ namespace CRYENGINE_ImportHub
                         Framework.cryengineLocation = value + @"\";
 
                         Framework.Log("CRYENGINE path find at: " + value);
-                        
-                        //Show a warning in the console if spaces detected in the path
+
+                        // Show a warning in the console if spaces detected in the path
                         if (value.Contains(" "))
                             Framework.Log("WARNING: Spaces detected in our CRYENGINE build path. This may cause some issues with CryTif.");
 
@@ -164,34 +192,32 @@ namespace CRYENGINE_ImportHub
 
         public static void CRYENGINE_RC_Call(string commands, string logWhenFinished = null)
         {
-            string rcPathBin32 = GetCRYENGINELocation() + @"Bin32\RC\rc.exe";
-            string rcPathBin64 = GetCRYENGINELocation() + @"Bin64\RC\rc.exe";
-            string rcPath;
-
-            //If found, use the 64 bits Ressource Compiler
-            if (File.Exists(rcPathBin64))
-                rcPath = rcPathBin64;
-            else
-                rcPath = rcPathBin32;
+            var rcPathBin32 = GetCRYENGINELocation() + @"Bin32\RC\rc.exe";
+            var rcPathBin64 = GetCRYENGINELocation() + @"Bin64\RC\rc.exe";
+            var rcPath = File.Exists(rcPathBin64) ? rcPathBin64 : rcPathBin32;
 
             if (File.Exists(rcPath))
             {
-                #if DEBUG
-                //commands = commands + " /wait";
-                #endif
+#if DEBUG
+                // commands = commands + " /wait";
+#endif
 
                 Framework.Log("Beginning RC call: " + commands);
 
-                Process process = new Process();
-                process.StartInfo.FileName = rcPath;
-                process.StartInfo.Arguments = commands;
-                //process.StartInfo.RedirectStandardOutput = true;
-
-                //#if !DEBUG
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                process.StartInfo.UseShellExecute = false;
-                //#endif
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = rcPath,
+                        Arguments = commands,
+                        // RedirectStandardOutput = true,
+                        // #if !DEBUG
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        // #endif
+                    }
+                };
 
                 process.Start();
                 Framework.Log("RC call send");
@@ -219,12 +245,11 @@ namespace CRYENGINE_ImportHub
         {
             try
             {
-                using (File.Open(filePath, FileMode.Open)){}
+                using (File.Open(filePath, FileMode.Open)) { }
             }
             catch (IOException e)
             {
                 var errorCode = Marshal.GetHRForException(e) & ((1 << 16) - 1);
-
                 return errorCode == 32 || errorCode == 33;
             }
 
@@ -233,9 +258,10 @@ namespace CRYENGINE_ImportHub
 
         public static void FocusProcess(string procName)
         {
-            Process[] objProcesses = System.Diagnostics.Process.GetProcessesByName(procName); if (objProcesses.Length > 0)
+            var objProcesses = System.Diagnostics.Process.GetProcessesByName(procName);
+            if (objProcesses.Length > 0)
             {
-                IntPtr hWnd = IntPtr.Zero;
+                var hWnd = IntPtr.Zero;
                 hWnd = objProcesses[0].MainWindowHandle;
                 ShowWindowAsync(new HandleRef(null, hWnd), SW_RESTORE);
                 SetForegroundWindow(objProcesses[0].MainWindowHandle);
@@ -258,17 +284,34 @@ namespace CRYENGINE_ImportHub
             }
         }
 
+        /// <summary>
+        /// Overload of ShowError including args for string.Format.
+        /// </summary>
+        /// <param name="error">Error message / string format.</param>
+        /// <param name="isFatal">Fatal error so application must exit?</param>
+        /// <param name="args">Args for string.Format of <paramref name="error"/>.</param>
+        public static void ShowError(string error, bool isFatal = false, params object[] args)
+        {
+            var message = string.Format(error, args);
+            Framework.ShowError(message, isFatal);
+        }
+
         public static void Log(string msg)
         {
             Console.WriteLine(msg);
 
-            if (!Framework.m_lockVisualConsole)
+            if (!Framework.LockVisualConsole)
             {
-                //Write in visual console
+                // Write in visual console
                 Framework.consoleControler.Text = Framework.consoleControler.Text + "\n" + msg;
                 Framework.consoleControler.SelectionStart = Framework.consoleControler.Text.Length;
                 Framework.consoleControler.ScrollToCaret();
             }
+        }
+
+        public static void Log(string msg, params object[] args)
+        {
+            Framework.Log(string.Format(msg, args));
         }
     }
 }

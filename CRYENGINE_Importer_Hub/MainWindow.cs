@@ -1,161 +1,168 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using System.Drawing;
-
+﻿//-----------------------------------------------------------------------
+// <copyright file="MainWindow.cs" company="Guillaume Puyal">
+//  The Importer Hub for CRYENGINE is free for any use and open source
+//  under Creative Common license (CC BY 4.0).
+//
+//  In short, you are free to do whatever you want
+//  as long as you leave the credits.
+//
+//  This tool uses the Crytek's Resource Compiler and the Magick.NET
+//  library with the following license: http:// magick.codeplex.com/license
+//  You can access to the full source code on GitHub.
+// </copyright>
+//-----------------------------------------------------------------------
 namespace CRYENGINE_ImportHub
 {
+    using System;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.IO;
+    using System.Linq;
+    using System.Windows.Forms;
+
     public partial class MainWindow : Form
     {
-        private bool m_isImageInClipboard = false;
-        private bool m_isCustomOutput = false;
-        private string m_customOutput;
-        private string[] m_customSlotData;
-        private bool m_isLinksManagementPreviouslyOpen = false;
-        private Image m_clipboardImage;
+        private bool isImageInClipboard = false;
+        private bool isCustomOutput = false;
+        private string customOutput;
+        private string[] customSlotData;
+        private bool isLinksManagementPreviouslyOpen = false;
+        private Image clipboardImage;
 
-        const string APP_VERSION = "0.5";
-        const string APP_TITLE_NAME = "Importer Hub for CRYENGINE - v" + APP_VERSION;
+        private string Version;
+        private string APP_TITLE_NAME;
 
-        private Framework m_framework;
-        private CRegistryManager m_registryManager;
-        private QuixelSuiteSetupDialog m_quixelSuiteDialog;
+        private Framework framework;
+        private RegistryManager registryManager;
+        private QuixelSuiteSetupDialog quixelSuiteDialog;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            m_framework = new Framework(consoleTextbox, showCryTif);
-            m_registryManager = new CRegistryManager();
+            framework = new Framework(consoleTextbox, showCryTif);
+            registryManager = new RegistryManager();
 
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(MainWindow_DragEnter);
             this.DragDrop += new DragEventHandler(MainWindow_DragDrop);
 
+            this.Version = this.GetAssemblyVersion().ToString();
+            this.APP_TITLE_NAME = "Importer Hub for CRYENGINE - v" + this.Version;
+
             this.Text = APP_TITLE_NAME;
-            #if DEBUG
+#if DEBUG
             this.TopMost = false;
             this.Text = APP_TITLE_NAME + " - DEV";
-            #endif
+#endif
 
-            //Use registry settings
-            if (m_registryManager.m_customPathInput == "")
-                customPath.Text = Framework.GetCRYENGINELocation();
-            else
-                customPath.Text = m_registryManager.m_customPathInput;
+            customPath.Text = string.IsNullOrEmpty(registryManager.CustomPathInput) ? Framework.GetCRYENGINELocation() : registryManager.CustomPathInput;
+            showCryTif.Checked = registryManager.UseCryTifDialog;
 
-            showCryTif.Checked = m_registryManager.m_useCryTifDialog;
-
-            m_customSlotData = CRegistryManager.GetCustomSlots();
+            customSlotData = RegistryManager.CustomSlots;
             SetCustomSlots();
 
             Framework.Log(APP_TITLE_NAME + " ready!");
         }
 
-
-        //After form load: BackgroundWorker for Update check
+        // After form load: BackgroundWorker for Update check
         private void MainWindow_Shown(object sender, EventArgs e)
         {
-            #if !DEBUG
+#if !DEBUG
             System.ComponentModel.BackgroundWorker bw = new System.ComponentModel.BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.WorkerReportsProgress = true;
             bw.DoWork += new System.ComponentModel.DoWorkEventHandler(bw_DoWork);
 
             bw.RunWorkerAsync();
-            #endif
+#endif
         }
 
         private void bw_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             System.ComponentModel.BackgroundWorker worker = sender as System.ComponentModel.BackgroundWorker;
 
-            new CUpdateNotification(APP_VERSION);
+            new UpdateNotification(this.Version);
             worker.CancelAsync();
         }
 
-
-        //Drag and Drop events
-        void MainWindow_DragEnter(object sender, DragEventArgs e)
+        // Drag and Drop events
+        private void MainWindow_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
         }
 
-        void MainWindow_DragDrop(object sender, DragEventArgs e)
+        private void MainWindow_DragDrop(object sender, DragEventArgs e)
         {
-            //Multi-files support
+            // Multi-files support
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
             foreach (string file in files)
             {
-                Framework.BeginImport(file, m_customOutput);
+                Framework.BeginImport(file, customOutput);
             }
         }
 
-
         private void MainWindow_Activated(object sender, EventArgs e)
         {
-            //Clipboard functions
+            // Clipboard functions
             if (Clipboard.ContainsImage())
             {
-                m_isImageInClipboard = true;
+                isImageInClipboard = true;
                 pasteTextureButton.Enabled = true;
             }
             else
             {
-                m_isImageInClipboard = false;
+                isImageInClipboard = false;
                 pasteTextureButton.Enabled = false;
             }
 
-            //Refresh custom links if the links management form was open
-            if (m_isLinksManagementPreviouslyOpen)
+            // Refresh custom links if the links management form was open
+            if (isLinksManagementPreviouslyOpen)
             {
-                m_registryManager = null;
-                m_registryManager = new CRegistryManager();
-                m_customSlotData = CRegistryManager.GetCustomSlots();
+                registryManager = null;
+                registryManager = new RegistryManager();
+                customSlotData = RegistryManager.GetCustomSlots();
                 SetCustomSlots();
 
-                m_isLinksManagementPreviouslyOpen = false;
+                isLinksManagementPreviouslyOpen = false;
             }
         }
 
         private void pasteTextureButton_Click(object sender, EventArgs e)
         {
-            //Clipboard functions
-            if (m_isImageInClipboard)
+            // Clipboard functions
+            if (isImageInClipboard)
             {
                 SaveFileDialog dialog = new SaveFileDialog();
                 dialog.Title = "Set path and texture name";
                 dialog.CheckPathExists = true;
                 dialog.Filter = "Textures|*.tif; *.dds";
 
-                if (m_customOutput != null && Directory.Exists(m_customOutput))
-                    dialog.InitialDirectory = m_customOutput;
+                if (customOutput != null && Directory.Exists(customOutput))
+                    dialog.InitialDirectory = customOutput;
 
                 Framework.Log("Image in clipboard: saving in memory");
-                m_clipboardImage = (Image)Clipboard.GetDataObject().GetData(DataFormats.Bitmap, true);
+                clipboardImage = (Image)Clipboard.GetDataObject().GetData(DataFormats.Bitmap, true);
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     string file = dialog.FileName;
                     Framework.Log("Save path selected from dialog: " + file);
 
-                    new CTextureFromClipboard(file, m_customOutput, m_clipboardImage);
+                    new TextureFromClipboard(file, clipboardImage);
                 }
 
-                m_clipboardImage.Dispose();
+                clipboardImage.Dispose();
             }
         }
 
-
-        //Browse files functions
+        // Browse files functions
         private void browseFilesButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Title = "Open textures or meshes";
-            dialog.Filter = "Textures and Meshes|*.tif; *.jpg; *.png; *.bmp; *.fbx; *.dae; *.tga; *.psd";  //Supported files
+            dialog.Filter = "Textures and Meshes|*.tif; *.jpg; *.png; *.bmp; *.fbx; *.dae; *.tga; *.psd";  // Supported files
             dialog.Multiselect = true;
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -167,45 +174,44 @@ namespace CRYENGINE_ImportHub
                         if (file != null)
                         {
                             Framework.Log("File selected from dialog: " + file);
-                            Framework.BeginImport(file, m_customOutput);
+                            Framework.BeginImport(file, customOutput);
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Framework.ShowError("Cannot read the file from the disk");
                 }
             }
         }
 
-
-        //Custom output folder
+        // Custom output folder
         private void useCustomOutput_CheckedChanged(object sender, EventArgs e)
         {
             if (useCustomOutput.Checked)
             {
-                m_isCustomOutput = true;
+                isCustomOutput = true;
 
-                #if DEBUG
+#if DEBUG
                 Framework.Log("Custom folder enabled: activate controls");
-                #endif
+#endif
 
                 customPath.Enabled = true;
                 browseFolderButton.Enabled = true;
-                m_customOutput = customPath.Text;
+                customOutput = customPath.Text;
             }
             else
             {
-                m_isCustomOutput = false;
+                isCustomOutput = false;
                 customPath.Enabled = false;
                 browseFolderButton.Enabled = false;
-                m_customOutput = null;
+                customOutput = null;
             }
         }
 
         private void browseFolderButton_Click(object sender, EventArgs e)
         {
-            if (m_isCustomOutput)
+            if (isCustomOutput)
             {
                 FolderBrowserDialog dialog = new FolderBrowserDialog();
                 dialog.Description = "Select custom output folder";
@@ -216,7 +222,7 @@ namespace CRYENGINE_ImportHub
                     Framework.Log("Path selected from dialog: " + path);
 
                     customPath.Text = path;
-                    m_customOutput = path;
+                    customOutput = path;
                 }
             }
         }
@@ -224,18 +230,16 @@ namespace CRYENGINE_ImportHub
         private void customPath_TextChanged(object sender, EventArgs e)
         {
             if (useCustomOutput.Checked)
-                m_customOutput = customPath.Text;
+                customOutput = customPath.Text;
         }
 
-
-        //Save settings on app close
+        // Save settings on app close
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            CRegistryManager.SaveAllSettings(customPath.Text, showCryTif.Checked);
+            RegistryManager.SaveAllSettings(customPath.Text, showCryTif.Checked);
         }
 
-
-        //Custom slots
+        // Custom slots
         private void SetCustomSlots()
         {
             Framework.Log("Set custom links");
@@ -243,13 +247,12 @@ namespace CRYENGINE_ImportHub
             ResetCustomSlots();
 
             int i = 0;
-            foreach (string noFormat in m_customSlotData)
+            foreach (string noFormat in customSlotData)
             {
-                string[] values = CCustomSlot.GetDataFromId(m_customSlotData, i);
+                string[] values = CustomSlot.GetDataFromId(customSlotData, i);
                 if (values != null)
                 {
-                    Button currentButton = CCustomSlot.GetButtonFromId(this, i);
-
+                    Button currentButton = CustomSlot.GetButtonFromId(this, i);
                     currentButton.Text = values[0];
                     currentButton.Enabled = true;
                 }
@@ -278,75 +281,78 @@ namespace CRYENGINE_ImportHub
 
         private void manageButton_Click(object sender, EventArgs e)
         {
-            LinksManagementWindow managementWindow = new LinksManagementWindow(m_customSlotData);
+            LinksManagementWindow managementWindow = new LinksManagementWindow(customSlotData);
             Dock = DockStyle.Fill;
             if (!Application.OpenForms.OfType<LinksManagementWindow>().Any())
             {
                 managementWindow.Show();
-                m_isLinksManagementPreviouslyOpen = true;
+                isLinksManagementPreviouslyOpen = true;
             }
         }
 
-
-        //Custom slots events
+        // Custom slots events
         private void customSlotButton1_Click(object sender, EventArgs e)
         {
-            CCustomSlot.ExeSlotAction(1, m_customSlotData);
+            CustomSlot.ExeSlotAction(1, customSlotData);
         }
 
         private void customSlotButton2_Click(object sender, EventArgs e)
         {
-            CCustomSlot.ExeSlotAction(2, m_customSlotData);
+            CustomSlot.ExeSlotAction(2, customSlotData);
         }
 
         private void customSlotButton3_Click(object sender, EventArgs e)
         {
-            CCustomSlot.ExeSlotAction(3, m_customSlotData);
+            CustomSlot.ExeSlotAction(3, customSlotData);
         }
 
         private void customSlotButton4_Click(object sender, EventArgs e)
         {
-            CCustomSlot.ExeSlotAction(4, m_customSlotData);
+            CustomSlot.ExeSlotAction(4, customSlotData);
         }
 
         private void customSlotButton5_Click(object sender, EventArgs e)
         {
-            CCustomSlot.ExeSlotAction(5, m_customSlotData);
+            CustomSlot.ExeSlotAction(5, customSlotData);
         }
 
         private void customSlotButton6_Click(object sender, EventArgs e)
         {
-            CCustomSlot.ExeSlotAction(6, m_customSlotData);
+            CustomSlot.ExeSlotAction(6, customSlotData);
         }
-
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://www.guillaume-puyal.com/");
+            Process.Start("http:// www.guillaume-puyal.com/");
         }
 
-        //Quixel Suite live
+        // Quixel Suite live
         private void quixelSuiteLive_Click(object sender, EventArgs e)
         {
             if (quixelSuiteLive.ForeColor != System.Drawing.Color.Red)
             {
-                m_quixelSuiteDialog = new QuixelSuiteSetupDialog(quixelSuiteLive);
+                quixelSuiteDialog = new QuixelSuiteSetupDialog(quixelSuiteLive);
 
                 Dock = DockStyle.Fill;
                 if (!Application.OpenForms.OfType<QuixelSuiteSetupDialog>().Any())
                 {
-                    m_quixelSuiteDialog.Show();
+                    quixelSuiteDialog.Show();
                 }
             }
             else
             {
-                m_quixelSuiteDialog.Stop();
-                m_quixelSuiteDialog.Dispose();
+                quixelSuiteDialog.Stop();
+                quixelSuiteDialog.Dispose();
 
                 quixelSuiteLive.Text = "Quixel Suite DDO";
                 quixelSuiteLive.ForeColor = System.Drawing.Color.White;
                 quixelSuiteLive.Width = 113;
             }
+        }
+
+        private Version GetAssemblyVersion()
+        {
+            return typeof(MainWindow).Assembly.GetName().Version;
         }
     }
 }

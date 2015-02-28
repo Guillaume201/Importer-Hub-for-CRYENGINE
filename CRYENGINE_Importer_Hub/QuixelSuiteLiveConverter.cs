@@ -1,19 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Xml;
-using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Windows.Media.Imaging;
-
+﻿//-----------------------------------------------------------------------
+// <copyright file="QuixelSuiteLiveConverter.cs" company="Guillaume Puyal">
+//  The Importer Hub for CRYENGINE is free for any use and open source
+//  under Creative Common license (CC BY 4.0).
+//
+//  In short, you are free to do whatever you want
+//  as long as you leave the credits.
+//
+//  This tool uses the Crytek's Resource Compiler and the Magick.NET
+//  library with the following license: http:// magick.codeplex.com/license
+//  You can access to the full source code on GitHub.
+// </copyright>
+//-----------------------------------------------------------------------
 namespace CRYENGINE_ImportHub
 {
-    class CQuixelSuiteDDOLiveConvert
+    using System;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.IO;
+    using System.Threading;
+    using System.Xml;
+
+    internal class CQuixelSuiteDDOLiveConvert
     {
         private const string GLOBAL_TEXTURES_PREFIX = "_";
         private const string DIFFUSE_SUFFIX = "_d.jpg";
@@ -23,14 +30,14 @@ namespace CRYENGINE_ImportHub
         private const string OCCLUSION_SUFFIX = "_o.jpg";
         private const string SPECULAR_SUFFIX = "_s.jpg";
 
-        private string m_projectXmlPath;
-        private string m_projectName;
-        private string m_projectDirectory;
-        private string m_cibleDirectory;
-        private bool m_isForCrossAppMode;
-        private FileSystemWatcher m_watcher;
+        private string projectXmlPath;
+        private string projectName;
+        private string projectDirectory;
+        private string cibleDirectory;
+        private bool isForCrossAppMode;
+        private FileSystemWatcher watcher;
 
-        enum ETextureType
+        private enum ETextureType
         {
             DIFFUSE,
             GLOSS,
@@ -42,20 +49,21 @@ namespace CRYENGINE_ImportHub
 
         public CQuixelSuiteDDOLiveConvert(string projectXmlPath, string cibleDirectory, bool isForCrossAppMode)
         {
-            m_cibleDirectory = cibleDirectory;
-            m_projectXmlPath = projectXmlPath;
-            m_projectDirectory = Path.GetDirectoryName(m_projectXmlPath);
-            m_isForCrossAppMode = isForCrossAppMode;
+            this.cibleDirectory = cibleDirectory;
+            this.projectXmlPath = projectXmlPath;
+            this.projectDirectory = Path.GetDirectoryName(projectXmlPath);
+            this.isForCrossAppMode = isForCrossAppMode;
 
-            if (!Directory.Exists(m_projectDirectory + @"\previewer"))
+            if (!Directory.Exists(projectDirectory + @"\previewer"))
+            {
                 Framework.ShowError("Unable to find the previewer directory", true);
+            }
 
-            m_projectName = GetProjectName();
-
+            this.projectName = GetProjectName();
             Framework.Log("Beginning Quixel Suite DDO Live import. Locking visual console.");
-            Framework.m_lockVisualConsole = true;
+            Framework.LockVisualConsole = true;
 
-            //Launch BackgroundWorker for GenerateAllTextures
+            // Launch BackgroundWorker for GenerateAllTextures
             System.ComponentModel.BackgroundWorker bw = new System.ComponentModel.BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.WorkerReportsProgress = true;
@@ -63,28 +71,29 @@ namespace CRYENGINE_ImportHub
 
             bw.RunWorkerAsync();
 
-            CreateFileWatcher(m_projectDirectory + @"\previewer");
+            CreateFileWatcher(projectDirectory + @"\previewer");
         }
 
         public void Stop()
         {
-            m_watcher.Dispose();
+            watcher.Dispose();
 
-            Framework.m_lockVisualConsole = false;
+            Framework.LockVisualConsole = false;
             Framework.Log("Ending Quixel Suite DDO Live import. Unlocking visual console.");
         }
 
         private string GetProjectName()
         {
-            XmlDocument xml = new XmlDocument();
+            var xml = new XmlDocument();
+            xml.Load(projectXmlPath);
 
-            xml.Load(m_projectXmlPath);
             XmlNode node = xml.SelectSingleNode("Project/Materials");
-
             var nodeName = node.FirstChild.Name;
 
             if (string.IsNullOrEmpty(nodeName))
+            {
                 Framework.ShowError("Failled to read the project XML file", true);
+            }
 
             return nodeName;
         }
@@ -95,43 +104,45 @@ namespace CRYENGINE_ImportHub
 
             Framework.Log("Generate all textures");
 
-            var diffuseFilePath = m_projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + m_projectName + DIFFUSE_SUFFIX;
-            var normalFilePath = m_projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + m_projectName + NORMALS_SUFFIX;
-            var glossFilePath = m_projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + m_projectName + GLOSS_SUFFIX;
-            var heightFilePath = m_projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + m_projectName + HEIGHT_SUFFIX;
-            var specularFilePath = m_projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + m_projectName + SPECULAR_SUFFIX;
+            var diffuseFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + DIFFUSE_SUFFIX;
+            var normalFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + NORMALS_SUFFIX;
+            var glossFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + GLOSS_SUFFIX;
+            var heightFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + HEIGHT_SUFFIX;
+            var specularFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + SPECULAR_SUFFIX;
 
             if (File.Exists(diffuseFilePath))
+            {
                 GenerateBitmapTexture(diffuseFilePath, ETextureType.DIFFUSE);
-
+            }
             if (File.Exists(normalFilePath) && File.Exists(glossFilePath))
+            {
                 GenerateTextureWithAlpha(normalFilePath, glossFilePath, ETextureType.NORMALS);
-
+            }
             if (File.Exists(heightFilePath))
+            {
                 GenerateTextureWithAlpha(heightFilePath, heightFilePath, ETextureType.HEIGHT);
-
+            }
             if (File.Exists(specularFilePath))
+            {
                 GenerateBitmapTexture(specularFilePath, ETextureType.SPECULAR);
-
+            }
             Framework.Log("All textures generated");
-
             worker.CancelAsync();
         }
 
         private void CreateFileWatcher(string path)
         {
-            m_watcher = new FileSystemWatcher();
-            m_watcher.Path = path;
+            watcher = new FileSystemWatcher
+            {
+                Path = path,
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                Filter = GLOBAL_TEXTURES_PREFIX + projectName + "*.jpg",
+            };
 
-            m_watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-
-            m_watcher.Filter = GLOBAL_TEXTURES_PREFIX + m_projectName + "*.jpg";
-
-            m_watcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            m_watcher.Created += new FileSystemEventHandler(OnFileChanged);
-            m_watcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-
-            m_watcher.EnableRaisingEvents = true;
+            watcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            watcher.Created += new FileSystemEventHandler(OnFileChanged);
+            watcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            watcher.EnableRaisingEvents = true;
         }
 
         private void OnFileChanged(object source, FileSystemEventArgs e)
@@ -139,33 +150,42 @@ namespace CRYENGINE_ImportHub
             var filePath = e.FullPath;
             var fileName = e.Name;
 
-            var normalFilePath = m_projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + m_projectName + NORMALS_SUFFIX;
-            var glossFilePath = m_projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + m_projectName + GLOSS_SUFFIX;
+            var normalFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + NORMALS_SUFFIX;
+            var glossFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + GLOSS_SUFFIX;
 
-            //DIFFUSE
-            if (fileName == GLOBAL_TEXTURES_PREFIX + m_projectName + DIFFUSE_SUFFIX)
+            // DIFFUSE
+            if (fileName == GLOBAL_TEXTURES_PREFIX + projectName + DIFFUSE_SUFFIX)
+            {
                 GenerateBitmapTexture(filePath, ETextureType.DIFFUSE);
+            }
 
-            //GLOSS
-            if (fileName == GLOBAL_TEXTURES_PREFIX + m_projectName + GLOSS_SUFFIX)
+            // GLOSS
+            if (fileName == GLOBAL_TEXTURES_PREFIX + projectName + GLOSS_SUFFIX)
+            {
                 GenerateTextureWithAlpha(normalFilePath, filePath, ETextureType.GLOSS);
+            }
 
-            //HEIGHTMAP
-            if (fileName == GLOBAL_TEXTURES_PREFIX + m_projectName + HEIGHT_SUFFIX)
+            // HEIGHTMAP
+            if (fileName == GLOBAL_TEXTURES_PREFIX + projectName + HEIGHT_SUFFIX)
+            {
                 GenerateTextureWithAlpha(filePath, filePath, ETextureType.HEIGHT);
+            }
 
-            //NORMALS
-            if (fileName == GLOBAL_TEXTURES_PREFIX + m_projectName + NORMALS_SUFFIX)
+            // NORMALS
+            if (fileName == GLOBAL_TEXTURES_PREFIX + projectName + NORMALS_SUFFIX)
+            {
                 GenerateTextureWithAlpha(filePath, glossFilePath, ETextureType.NORMALS);
+            }
 
-            //OCCLUSION
+            // OCCLUSION
             /*if (fileName == GLOBAL_TEXTURES_PREFIX + m_projectName + OCCLUSION_SUFFIX)
                 Console.WriteLine("OCCLUSION");*/
 
-            //SPECULAR
-            if (fileName == GLOBAL_TEXTURES_PREFIX + m_projectName + SPECULAR_SUFFIX)
+            // SPECULAR
+            if (fileName == GLOBAL_TEXTURES_PREFIX + projectName + SPECULAR_SUFFIX)
+            {
                 GenerateBitmapTexture(filePath, ETextureType.SPECULAR);
-
+            }
         }
 
         private void GenerateBitmapTexture(string sourceTexturePath, ETextureType textureType)
@@ -183,17 +203,19 @@ namespace CRYENGINE_ImportHub
                     break;
             }
 
-            var finalFilePath = m_cibleDirectory + @"\" + m_projectName + finalFileSuffix;
+            var finalFilePath = cibleDirectory + @"\" + projectName + finalFileSuffix;
 
             if (File.Exists(finalFilePath))
+            {
                 File.Delete(finalFilePath);
+            }
 
-            while (!File.Exists(sourceTexturePath));    //Wait until the source file is recreated
+            while (!File.Exists(sourceTexturePath)) ;    // Wait until the source file is recreated
             File.Copy(sourceTexturePath, finalFilePath);
 
-            new CTextureTiffConvert(finalFilePath, true);
+            new TextureTiffConvert(finalFilePath, true);
 
-            if (m_isForCrossAppMode)
+            if (isForCrossAppMode)
                 Framework.FocusProcess("Editor");
 
             File.Delete(finalFilePath);
@@ -218,31 +240,29 @@ namespace CRYENGINE_ImportHub
                     break;
             }
 
-            var finalFilePath = m_cibleDirectory + @"\" + m_projectName + finalFileSuffix;
+            var finalFilePath = cibleDirectory + @"\" + projectName + finalFileSuffix;
 
-            while (!File.Exists(sourceTexturePath)) ;    //Wait until the source file is recreated
-            while (!File.Exists(sourceAlphaMaskPath)) ;    //Wait until the source file is recreated
+            while (!File.Exists(sourceTexturePath)) ;    // Wait until the source file is recreated
+            while (!File.Exists(sourceAlphaMaskPath)) ;    // Wait until the source file is recreated
 
-            //Begin image process thread
+            // Begin image process thread
             AlphaMaskThread threadHandle = new AlphaMaskThread(sourceTexturePath, sourceAlphaMaskPath, finalFilePath);
 
             Thread alphaMaskThread = new Thread(new ThreadStart(threadHandle.ProceedImage));
             alphaMaskThread.Start();
-
             alphaMaskThread.Join();
             alphaMaskThread.Abort();
 
-            new CTextureTiffConvert(finalFilePath, true);
-
-            if (m_isForCrossAppMode)
+            new TextureTiffConvert(finalFilePath, true);
+            if (isForCrossAppMode)
+            {
                 Framework.FocusProcess("Editor");
-
-            //File.Delete(finalFilePath);
-
+            }
+            // File.Delete(finalFilePath);
         }
     }
 
-    class AlphaMaskThread
+    internal class AlphaMaskThread
     {
         private string m_sourceTexturePath;
         private string m_sourceAlphaMaskPath;
@@ -257,9 +277,9 @@ namespace CRYENGINE_ImportHub
 
         public void ProceedImage()
         {
-            #if DEBUG
+#if DEBUG
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            #endif
+#endif
 
             Stream inputSource = File.OpenRead(m_sourceTexturePath);
             Bitmap source = (Bitmap)Bitmap.FromStream(inputSource);
@@ -348,11 +368,11 @@ namespace CRYENGINE_ImportHub
             source.Dispose();
             alphaMask.Dispose();
 
-            #if DEBUG
+#if DEBUG
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             Console.WriteLine("AlphaMaskThread::ProceedImage() file: " + m_sourceTexturePath + " time: " + elapsedMs);
-            #endif
+#endif
         }
     }
 }
