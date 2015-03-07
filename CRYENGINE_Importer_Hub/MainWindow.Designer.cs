@@ -156,7 +156,7 @@
             this.browseFilesButton.TabIndex = 2;
             this.browseFilesButton.Text = "Browse textures and meshes";
             this.browseFilesButton.UseVisualStyleBackColor = false;
-            this.browseFilesButton.Click += new System.EventHandler(this.browseFilesButton_Click);
+            this.browseFilesButton.Click += new System.EventHandler(this.BrowseFilesButton_Click);
             // 
             // label2
             // 
@@ -222,7 +222,7 @@
             this.customSlotButton2.TabIndex = 9;
             this.customSlotButton2.Text = "Custom slot";
             this.customSlotButton2.UseVisualStyleBackColor = false;
-            this.customSlotButton2.Click += new System.EventHandler(this.customSlotButton2_Click);
+            this.customSlotButton2.Click += new System.EventHandler(this.CustomSlotButton_Click);
             // 
             // customSlotButton1
             // 
@@ -237,7 +237,7 @@
             this.customSlotButton1.TabIndex = 8;
             this.customSlotButton1.Text = "Custom slot";
             this.customSlotButton1.UseVisualStyleBackColor = false;
-            this.customSlotButton1.Click += new System.EventHandler(this.customSlotButton1_Click);
+            this.customSlotButton1.Click += new System.EventHandler(this.CustomSlotButton_Click);
             // 
             // customSlotButton3
             // 
@@ -252,7 +252,7 @@
             this.customSlotButton3.TabIndex = 10;
             this.customSlotButton3.Text = "Custom slot";
             this.customSlotButton3.UseVisualStyleBackColor = false;
-            this.customSlotButton3.Click += new System.EventHandler(this.customSlotButton3_Click);
+            this.customSlotButton3.Click += new System.EventHandler(this.CustomSlotButton_Click);
             // 
             // customSlotButton6
             // 
@@ -267,7 +267,7 @@
             this.customSlotButton6.TabIndex = 13;
             this.customSlotButton6.Text = "Custom slot";
             this.customSlotButton6.UseVisualStyleBackColor = false;
-            this.customSlotButton6.Click += new System.EventHandler(this.customSlotButton6_Click);
+            this.customSlotButton6.Click += new System.EventHandler(this.CustomSlotButton_Click);
             // 
             // customSlotButton5
             // 
@@ -282,7 +282,7 @@
             this.customSlotButton5.TabIndex = 12;
             this.customSlotButton5.Text = "Custom slot";
             this.customSlotButton5.UseVisualStyleBackColor = false;
-            this.customSlotButton5.Click += new System.EventHandler(this.customSlotButton5_Click);
+            this.customSlotButton5.Click += new System.EventHandler(this.CustomSlotButton_Click);
             // 
             // customSlotButton4
             // 
@@ -297,7 +297,7 @@
             this.customSlotButton4.TabIndex = 11;
             this.customSlotButton4.Text = "Custom slot";
             this.customSlotButton4.UseVisualStyleBackColor = false;
-            this.customSlotButton4.Click += new System.EventHandler(this.customSlotButton4_Click);
+            this.customSlotButton4.Click += new System.EventHandler(this.CustomSlotButton_Click);
             // 
             // manageButton
             // 
@@ -311,7 +311,7 @@
             this.manageButton.TabIndex = 14;
             this.manageButton.Text = "Customize links";
             this.manageButton.UseVisualStyleBackColor = false;
-            this.manageButton.Click += new System.EventHandler(this.manageButton_Click);
+            this.manageButton.Click += new System.EventHandler(this.ManageButton_Click);
             // 
             // linkLabel1
             // 
@@ -323,7 +323,7 @@
             this.linkLabel1.TabIndex = 16;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Guillaume Puyal";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel1_LinkClicked);
             // 
             // pictureBox1
             // 
@@ -360,7 +360,7 @@
             this.quixelSuiteLive.TabIndex = 19;
             this.quixelSuiteLive.Text = "Quixel Suite DDO";
             this.quixelSuiteLive.UseVisualStyleBackColor = false;
-            this.quixelSuiteLive.Click += new System.EventHandler(this.quixelSuiteLive_Click);
+            this.quixelSuiteLive.Click += new System.EventHandler(this.QuixelSuiteLive_Click);
             // 
             // groupBox2
             // 

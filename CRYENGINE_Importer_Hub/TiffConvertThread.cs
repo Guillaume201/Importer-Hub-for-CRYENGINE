@@ -17,27 +17,45 @@ namespace CRYENGINE_ImportHub
     using System.IO;
     using System.Windows.Media.Imaging;
 
+    /// <summary>
+    /// Tiff conversion thread functionality wrapped in a class.
+    /// </summary>
     internal class TiffConvertThread
     {
+        /// <summary>
+        /// Path to the file to convert.
+        /// </summary>
         private string filePath;
+
+        /// <summary>
+        /// Path to store the converted filed.
+        /// </summary>
         private string convertedFilePath;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TiffConvertThread"/> class.
+        /// </summary>
+        /// <param name="filePath">Path to the file to convert.</param>
         public TiffConvertThread(string filePath)
         {
             this.filePath = filePath;
-            convertedFilePath = Path.GetDirectoryName(filePath) + @"\" + Path.GetFileNameWithoutExtension(filePath) + ".tif";
+            this.convertedFilePath = Path.GetDirectoryName(filePath) + @"\" + Path.GetFileNameWithoutExtension(filePath) + ".tif";
         }
 
+        /// <summary>
+        /// Convert function.
+        /// </summary>
+        /// <remarks>Should be executed on it's own thread.</remarks>
         public void Convert()
         {
             try
             {
-                var bitmapDecoder = BitmapDecoder.Create(new Uri(filePath), BitmapCreateOptions.IgnoreColorProfile, BitmapCacheOption.OnLoad);
+                var bitmapDecoder = BitmapDecoder.Create(new Uri(this.filePath), BitmapCreateOptions.IgnoreColorProfile, BitmapCacheOption.OnLoad);
                 var sourceFrame = bitmapDecoder.Frames[0];
 
-                if (Path.GetExtension(convertedFilePath).Equals(".tif", StringComparison.CurrentCultureIgnoreCase))
+                if (Path.GetExtension(this.convertedFilePath).Equals(".tif", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    using (var stream = new FileStream(convertedFilePath, FileMode.Create, FileAccess.Write, FileShare.Delete))
+                    using (var stream = new FileStream(this.convertedFilePath, FileMode.Create, FileAccess.Write, FileShare.Delete))
                     {
                         var encoder = new TiffBitmapEncoder();
                         encoder.Compression = TiffCompressOption.None;
@@ -48,7 +66,7 @@ namespace CRYENGINE_ImportHub
             }
             catch (Exception ex)
             {
-                Framework.ShowError("Unable to save the temporary file at {0}. {1}", true, convertedFilePath, ex.Message);
+                Framework.ShowError("Unable to save the temporary file at {0}. {1}", true, this.convertedFilePath, ex.Message);
             }
         }
     }

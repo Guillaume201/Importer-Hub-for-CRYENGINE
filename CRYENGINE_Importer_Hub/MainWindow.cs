@@ -20,49 +20,95 @@ namespace CRYENGINE_ImportHub
     using System.Linq;
     using System.Windows.Forms;
 
+    /// <summary>
+    /// Implementation of MainWindow form.
+    /// </summary>
     public partial class MainWindow : Form
     {
+        private Image clipboardImage;
         private bool isImageInClipboard = false;
+
         private bool isCustomOutput = false;
         private string customOutput;
         private string[] customSlotData;
         private bool isLinksManagementPreviouslyOpen = false;
-        private Image clipboardImage;
 
-        private string Version;
-        private string APP_TITLE_NAME;
-
+        /// <summary>
+        /// Holds an instance of the <see cref="Framework"/>.
+        /// </summary>
         private Framework framework;
+
+        /// <summary>
+        /// Holds an instance of the <see cref="RegistryManager"/>.
+        /// </summary>
         private RegistryManager registryManager;
+
+        /// <summary>
+        /// Holds an instance of the <see cref="QuixelSuiteSetupDialog"/>.
+        /// </summary>
         private QuixelSuiteSetupDialog quixelSuiteDialog;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// </summary>
         public MainWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
-            framework = new Framework(consoleTextbox, showCryTif);
-            registryManager = new RegistryManager();
+            this.framework = new Framework(consoleTextbox, showCryTif);
+            this.registryManager = new RegistryManager();
 
             this.AllowDrop = true;
-            this.DragEnter += new DragEventHandler(MainWindow_DragEnter);
-            this.DragDrop += new DragEventHandler(MainWindow_DragDrop);
+            this.DragEnter += new DragEventHandler(this.MainWindow_DragEnter);
+            this.DragDrop += new DragEventHandler(this.MainWindow_DragDrop);
 
-            this.Version = this.GetAssemblyVersion().ToString();
-            this.APP_TITLE_NAME = "Importer Hub for CRYENGINE - v" + this.Version;
+            this.Text = this.AppTitleName;
+            this.TopMost = !this.IsDebug;
 
-            this.Text = APP_TITLE_NAME;
+            this.customPath.Text = string.IsNullOrEmpty(this.registryManager.CustomPathInput) ? Framework.GetCRYENGINELocation() : this.registryManager.CustomPathInput;
+            this.showCryTif.Checked = this.registryManager.UseCryTifDialog;
+
+            this.customSlotData = RegistryManager.CustomSlots;
+            this.SetCustomSlots();
+
+            Framework.Log(this.AppTitleName + " ready!");
+        }
+
+        /// <summary>
+        /// Gets the current version of the application from the assembly.
+        /// </summary>
+        private string Version
+        {
+            get
+            {
+                return this.GetAssemblyVersion().ToString();
+            }
+        }
+
+        /// <summary>
+        /// Gets the application title name.
+        /// </summary>
+        private string AppTitleName
+        {
+            get
+            {
+                return string.Format("{0} - v{1}{2}", "Importer Hub for CRYENGINE", this.Version, this.IsDebug ? "- DEV" : string.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the current build is a debug build or not.
+        /// </summary>
+        private bool IsDebug
+        {
+            get
+            {
 #if DEBUG
-            this.TopMost = false;
-            this.Text = APP_TITLE_NAME + " - DEV";
+                return true;
+#else
+                return false;
 #endif
-
-            customPath.Text = string.IsNullOrEmpty(registryManager.CustomPathInput) ? Framework.GetCRYENGINELocation() : registryManager.CustomPathInput;
-            showCryTif.Checked = registryManager.UseCryTifDialog;
-
-            customSlotData = RegistryManager.CustomSlots;
-            SetCustomSlots();
-
-            Framework.Log(APP_TITLE_NAME + " ready!");
+            }
         }
 
         // After form load: BackgroundWorker for Update check
@@ -89,7 +135,10 @@ namespace CRYENGINE_ImportHub
         // Drag and Drop events
         private void MainWindow_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
         }
 
         private void MainWindow_DragDrop(object sender, DragEventArgs e)
@@ -99,7 +148,7 @@ namespace CRYENGINE_ImportHub
 
             foreach (string file in files)
             {
-                Framework.BeginImport(file, customOutput);
+                Framework.BeginImport(file, this.customOutput);
             }
         }
 
@@ -108,73 +157,77 @@ namespace CRYENGINE_ImportHub
             // Clipboard functions
             if (Clipboard.ContainsImage())
             {
-                isImageInClipboard = true;
-                pasteTextureButton.Enabled = true;
+                this.isImageInClipboard = true;
+                this.pasteTextureButton.Enabled = true;
             }
             else
             {
-                isImageInClipboard = false;
-                pasteTextureButton.Enabled = false;
+                this.isImageInClipboard = false;
+                this.pasteTextureButton.Enabled = false;
             }
 
             // Refresh custom links if the links management form was open
-            if (isLinksManagementPreviouslyOpen)
+            if (this.isLinksManagementPreviouslyOpen)
             {
-                registryManager = null;
-                registryManager = new RegistryManager();
-                customSlotData = RegistryManager.GetCustomSlots();
-                SetCustomSlots();
+                this.registryManager = new RegistryManager();
+                this.customSlotData = RegistryManager.GetCustomSlots();
+                this.SetCustomSlots();
 
-                isLinksManagementPreviouslyOpen = false;
+                this.isLinksManagementPreviouslyOpen = false;
             }
         }
 
         private void pasteTextureButton_Click(object sender, EventArgs e)
         {
             // Clipboard functions
-            if (isImageInClipboard)
+            if (this.isImageInClipboard)
             {
                 SaveFileDialog dialog = new SaveFileDialog();
                 dialog.Title = "Set path and texture name";
                 dialog.CheckPathExists = true;
                 dialog.Filter = "Textures|*.tif; *.dds";
 
-                if (customOutput != null && Directory.Exists(customOutput))
-                    dialog.InitialDirectory = customOutput;
+                if (this.customOutput != null && Directory.Exists(this.customOutput))
+                {
+                    dialog.InitialDirectory = this.customOutput;
+                }
 
                 Framework.Log("Image in clipboard: saving in memory");
-                clipboardImage = (Image)Clipboard.GetDataObject().GetData(DataFormats.Bitmap, true);
+                this.clipboardImage = (Image)Clipboard.GetDataObject().GetData(DataFormats.Bitmap, true);
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     string file = dialog.FileName;
                     Framework.Log("Save path selected from dialog: " + file);
 
-                    new TextureFromClipboard(file, clipboardImage);
+                    new TextureFromClipboard(file, this.clipboardImage);
                 }
 
-                clipboardImage.Dispose();
+                this.clipboardImage.Dispose();
             }
         }
 
         // Browse files functions
-        private void browseFilesButton_Click(object sender, EventArgs e)
+        private void BrowseFilesButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Title = "Open textures or meshes";
-            dialog.Filter = "Textures and Meshes|*.tif; *.jpg; *.png; *.bmp; *.fbx; *.dae; *.tga; *.psd";  // Supported files
-            dialog.Multiselect = true;
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Title = "Open textures or meshes",
+                Filter = "Textures and Meshes|*.tif; *.jpg; *.png; *.bmp; *.fbx; *.dae; *.tga; *.psd",  // Supported files
+                Multiselect = true
+            };
+
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    string[] files = dialog.FileNames;
+                    var files = dialog.FileNames;
                     foreach (string file in files)
                     {
                         if (file != null)
                         {
                             Framework.Log("File selected from dialog: " + file);
-                            Framework.BeginImport(file, customOutput);
+                            Framework.BeginImport(file, this.customOutput);
                         }
                     }
                 }
@@ -190,28 +243,28 @@ namespace CRYENGINE_ImportHub
         {
             if (useCustomOutput.Checked)
             {
-                isCustomOutput = true;
+                this.isCustomOutput = true;
 
 #if DEBUG
                 Framework.Log("Custom folder enabled: activate controls");
 #endif
 
-                customPath.Enabled = true;
-                browseFolderButton.Enabled = true;
-                customOutput = customPath.Text;
+                this.customPath.Enabled = true;
+                this.browseFolderButton.Enabled = true;
+                this.customOutput = customPath.Text;
             }
             else
             {
-                isCustomOutput = false;
-                customPath.Enabled = false;
-                browseFolderButton.Enabled = false;
-                customOutput = null;
+                this.isCustomOutput = false;
+                this.customPath.Enabled = false;
+                this.browseFolderButton.Enabled = false;
+                this.customOutput = null;
             }
         }
 
         private void browseFolderButton_Click(object sender, EventArgs e)
         {
-            if (isCustomOutput)
+            if (this.isCustomOutput)
             {
                 FolderBrowserDialog dialog = new FolderBrowserDialog();
                 dialog.Description = "Select custom output folder";
@@ -221,8 +274,8 @@ namespace CRYENGINE_ImportHub
                     string path = dialog.SelectedPath;
                     Framework.Log("Path selected from dialog: " + path);
 
-                    customPath.Text = path;
-                    customOutput = path;
+                    this.customPath.Text = path;
+                    this.customOutput = path;
                 }
             }
         }
@@ -230,126 +283,127 @@ namespace CRYENGINE_ImportHub
         private void customPath_TextChanged(object sender, EventArgs e)
         {
             if (useCustomOutput.Checked)
-                customOutput = customPath.Text;
+            {
+                this.customOutput = customPath.Text;
+            }
         }
 
-        // Save settings on app close
+        /// <summary>
+        /// Event handler for Close event on MainWindow.
+        /// Ensure to save all settings when closing the application.
+        /// </summary>
+        /// <param name="sender">Reference to the <see cref="Form"/> object.</param>
+        /// <param name="e"><see cref="FormClosingEventArgs"/> arguments.</param>
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             RegistryManager.SaveAllSettings(customPath.Text, showCryTif.Checked);
         }
 
-        // Custom slots
+        /// <summary>
+        /// Set values of custom slots.
+        /// </summary>
         private void SetCustomSlots()
         {
             Framework.Log("Set custom links");
+            this.ResetCustomSlots();
 
-            ResetCustomSlots();
-
-            int i = 0;
-            foreach (string noFormat in customSlotData)
+            for (int i = 0; i < this.customSlotData.Length; i++)
             {
-                string[] values = CustomSlot.GetDataFromId(customSlotData, i);
+                var values = CustomSlot.GetDataFromId(this.customSlotData, i);
                 if (values != null)
                 {
                     Button currentButton = CustomSlot.GetButtonFromId(this, i);
-                    currentButton.Text = values[0];
-                    currentButton.Enabled = true;
+                    this.SetCustomSlot(currentButton, true, values[0]);
                 }
-
-                i++;
             }
         }
 
+        /// <summary>
+        /// Reset custom slots with default text and disabled state.
+        /// </summary>
         private void ResetCustomSlots()
         {
             string defaultText = "Custom link";
 
-            customSlotButton1.Enabled = false;
-            customSlotButton1.Text = defaultText;
-            customSlotButton2.Enabled = false;
-            customSlotButton2.Text = defaultText;
-            customSlotButton3.Enabled = false;
-            customSlotButton3.Text = defaultText;
-            customSlotButton4.Enabled = false;
-            customSlotButton4.Text = defaultText;
-            customSlotButton5.Enabled = false;
-            customSlotButton5.Text = defaultText;
-            customSlotButton6.Enabled = false;
-            customSlotButton6.Text = defaultText;
+            this.SetCustomSlot(this.customSlotButton1, false, defaultText);
+            this.SetCustomSlot(this.customSlotButton2, false, defaultText);
+            this.SetCustomSlot(this.customSlotButton3, false, defaultText);
+            this.SetCustomSlot(this.customSlotButton4, false, defaultText);
+            this.SetCustomSlot(this.customSlotButton5, false, defaultText);
+            this.SetCustomSlot(this.customSlotButton6, false, defaultText);
         }
 
-        private void manageButton_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Set the value and enabled state of a specific button.
+        /// </summary>
+        /// <param name="button">Reference to a button, for custom slots.</param>
+        /// <param name="enabled"><c>True</c> if button is enabled; otherwise <c>false</c></param>
+        /// <param name="text">Text to display.</param>
+        private void SetCustomSlot(Button button, bool enabled, string text)
         {
-            LinksManagementWindow managementWindow = new LinksManagementWindow(customSlotData);
-            Dock = DockStyle.Fill;
+            button.Text = text;
+            button.Enabled = enabled;
+        }
+
+        /// <summary>
+        /// Single event handler for all custom slot buttons.
+        /// </summary>
+        /// <param name="sender">Reference to a <see cref="Button"/>.</param>
+        /// <param name="e"><see cref="EventArgs"/> for Click event.</param>
+        private void CustomSlotButton_Click(object sender, EventArgs e)
+        {
+            var index = CustomSlot.GetIdFromButton(this, sender as Button);
+            CustomSlot.ExeSlotAction(index, this.customSlotData);
+        }
+
+        private void ManageButton_Click(object sender, EventArgs e)
+        {
+            LinksManagementWindow managementWindow = new LinksManagementWindow(this.customSlotData);
+            this.Dock = DockStyle.Fill;
             if (!Application.OpenForms.OfType<LinksManagementWindow>().Any())
             {
                 managementWindow.Show();
-                isLinksManagementPreviouslyOpen = true;
+                this.isLinksManagementPreviouslyOpen = true;
             }
         }
 
-        // Custom slots events
-        private void customSlotButton1_Click(object sender, EventArgs e)
-        {
-            CustomSlot.ExeSlotAction(1, customSlotData);
-        }
-
-        private void customSlotButton2_Click(object sender, EventArgs e)
-        {
-            CustomSlot.ExeSlotAction(2, customSlotData);
-        }
-
-        private void customSlotButton3_Click(object sender, EventArgs e)
-        {
-            CustomSlot.ExeSlotAction(3, customSlotData);
-        }
-
-        private void customSlotButton4_Click(object sender, EventArgs e)
-        {
-            CustomSlot.ExeSlotAction(4, customSlotData);
-        }
-
-        private void customSlotButton5_Click(object sender, EventArgs e)
-        {
-            CustomSlot.ExeSlotAction(5, customSlotData);
-        }
-
-        private void customSlotButton6_Click(object sender, EventArgs e)
-        {
-            CustomSlot.ExeSlotAction(6, customSlotData);
-        }
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        /// <summary>
+        /// Event handler for clicking <see cref="linkLabel1"/>.
+        /// </summary>
+        /// <param name="sender">Reference to the object.</param>
+        /// <param name="e">Event arguments.</param>
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("http:// www.guillaume-puyal.com/");
         }
 
         // Quixel Suite live
-        private void quixelSuiteLive_Click(object sender, EventArgs e)
+        private void QuixelSuiteLive_Click(object sender, EventArgs e)
         {
-            if (quixelSuiteLive.ForeColor != System.Drawing.Color.Red)
+            if (this.quixelSuiteLive.ForeColor != System.Drawing.Color.Red)
             {
-                quixelSuiteDialog = new QuixelSuiteSetupDialog(quixelSuiteLive);
-
-                Dock = DockStyle.Fill;
+                this.Dock = DockStyle.Fill;
+                this.quixelSuiteDialog = new QuixelSuiteSetupDialog(this.quixelSuiteLive);
                 if (!Application.OpenForms.OfType<QuixelSuiteSetupDialog>().Any())
                 {
-                    quixelSuiteDialog.Show();
+                    this.quixelSuiteDialog.Show();
                 }
             }
             else
             {
-                quixelSuiteDialog.Stop();
-                quixelSuiteDialog.Dispose();
+                this.quixelSuiteDialog.Stop();
+                this.quixelSuiteDialog.Dispose();
 
-                quixelSuiteLive.Text = "Quixel Suite DDO";
-                quixelSuiteLive.ForeColor = System.Drawing.Color.White;
-                quixelSuiteLive.Width = 113;
+                this.quixelSuiteLive.Text = "Quixel Suite DDO";
+                this.quixelSuiteLive.Width = 113;
+                this.quixelSuiteLive.ForeColor = System.Drawing.Color.White;
             }
         }
 
+        /// <summary>
+        /// Get the version from the assembly.
+        /// </summary>
+        /// <returns><see cref="Version"/>.</returns>
         private Version GetAssemblyVersion()
         {
             return typeof(MainWindow).Assembly.GetName().Version;

@@ -13,10 +13,14 @@
 //-----------------------------------------------------------------------
 namespace CRYENGINE_ImportHub
 {
+    using System;
     using System.Diagnostics;
     using System.IO;
     using System.Windows.Forms;
 
+    /// <summary>
+    /// Static class containing functionality regarding custom slots.
+    /// </summary>
     public static class CustomSlot
     {
         public static Button GetButtonFromId(MainWindow mainWindow, int id)
@@ -44,6 +48,43 @@ namespace CRYENGINE_ImportHub
                 default:
                     return null;
             }
+        }
+
+        /// <summary>
+        /// Get index of CustomSlotButton.
+        /// </summary>
+        /// <param name="mainWindow">Reference to an instance of <see cref="MainWindow"/></param>
+        /// <param name="button">Button to get index of.</param>
+        /// <returns>Index of the button.</returns>
+        /// <exception cref="ArgumentNullException">When <paramref name="button"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">When <paramref name="mainWindow"/> is null.</exception>
+        /// <exception cref="ArgumentException">When <paramref name="button"/> is not a part of the CustomSlotButton buttons.</exception>
+        /// <exception cref="IndexOutOfRangeException">When button does not have a proper index.</exception>
+        public static int GetIdFromButton(MainWindow mainWindow, Button button)
+        {
+            if (mainWindow == null)
+            {
+                throw new ArgumentNullException("mainWindow");
+            }
+
+            if (button == null)
+            {
+                throw new ArgumentNullException("button");
+            }
+
+            var str = "customSlotButton";
+            if (!button.Name.StartsWith(str))
+            {
+                throw new ArgumentException("Button has to be a 'CustomSlotButton'.", "button");
+            }
+
+            var index = 0;
+            if (!int.TryParse(button.Name.Substring(str.Length), out index))
+            {
+                throw new IndexOutOfRangeException("Button does not have a proper index.");
+            }
+
+            return index;
         }
 
         public static string[] GetDataFromId(string[] registryData, int id, bool replaceTags = true)

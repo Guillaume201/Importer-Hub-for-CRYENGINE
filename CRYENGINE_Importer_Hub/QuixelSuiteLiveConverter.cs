@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="QuixelSuiteLiveConverter.cs" company="Guillaume Puyal">
+// <copyright file="CQuixelSuiteDDOLiveConvert.cs" company="Guillaume Puyal">
 //  The Importer Hub for CRYENGINE is free for any use and open source
 //  under Creative Common license (CC BY 4.0).
 //
@@ -14,6 +14,7 @@
 namespace CRYENGINE_ImportHub
 {
     using System;
+    using System.ComponentModel;
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.IO;
@@ -64,14 +65,13 @@ namespace CRYENGINE_ImportHub
             Framework.LockVisualConsole = true;
 
             // Launch BackgroundWorker for GenerateAllTextures
-            System.ComponentModel.BackgroundWorker bw = new System.ComponentModel.BackgroundWorker();
-            bw.WorkerSupportsCancellation = true;
-            bw.WorkerReportsProgress = true;
-            bw.DoWork += new System.ComponentModel.DoWorkEventHandler(GenerateAllTextures);
+            var backgroundWorker = new BackgroundWorker();
+            backgroundWorker.WorkerSupportsCancellation = true;
+            backgroundWorker.WorkerReportsProgress = true;
+            backgroundWorker.DoWork += new DoWorkEventHandler(this.GenerateAllTextures);
+            backgroundWorker.RunWorkerAsync();
 
-            bw.RunWorkerAsync();
-
-            CreateFileWatcher(projectDirectory + @"\previewer");
+            this.CreateFileWatcher(projectDirectory + @"\previewer");
         }
 
         public void Stop()
@@ -87,7 +87,7 @@ namespace CRYENGINE_ImportHub
             var xml = new XmlDocument();
             xml.Load(projectXmlPath);
 
-            XmlNode node = xml.SelectSingleNode("Project/Materials");
+            var node = xml.SelectSingleNode("Project/Materials");
             var nodeName = node.FirstChild.Name;
 
             if (string.IsNullOrEmpty(nodeName))
@@ -100,32 +100,37 @@ namespace CRYENGINE_ImportHub
 
         private void GenerateAllTextures(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            System.ComponentModel.BackgroundWorker worker = sender as System.ComponentModel.BackgroundWorker;
+            var worker = sender as System.ComponentModel.BackgroundWorker;
 
             Framework.Log("Generate all textures");
 
-            var diffuseFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + DIFFUSE_SUFFIX;
-            var normalFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + NORMALS_SUFFIX;
-            var glossFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + GLOSS_SUFFIX;
-            var heightFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + HEIGHT_SUFFIX;
-            var specularFilePath = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName + SPECULAR_SUFFIX;
+            var basename = projectDirectory + @"\previewer\" + GLOBAL_TEXTURES_PREFIX + projectName;
+            var glossFilePath = basename + GLOSS_SUFFIX;
+            var heightFilePath = basename + HEIGHT_SUFFIX;
+            var normalFilePath = basename + NORMALS_SUFFIX;
+            var diffuseFilePath = basename + DIFFUSE_SUFFIX;
+            var specularFilePath = basename + SPECULAR_SUFFIX;
 
             if (File.Exists(diffuseFilePath))
             {
-                GenerateBitmapTexture(diffuseFilePath, ETextureType.DIFFUSE);
+                this.GenerateBitmapTexture(diffuseFilePath, ETextureType.DIFFUSE);
             }
+
             if (File.Exists(normalFilePath) && File.Exists(glossFilePath))
             {
-                GenerateTextureWithAlpha(normalFilePath, glossFilePath, ETextureType.NORMALS);
+                this.GenerateTextureWithAlpha(normalFilePath, glossFilePath, ETextureType.NORMALS);
             }
+
             if (File.Exists(heightFilePath))
             {
-                GenerateTextureWithAlpha(heightFilePath, heightFilePath, ETextureType.HEIGHT);
+                this.GenerateTextureWithAlpha(heightFilePath, heightFilePath, ETextureType.HEIGHT);
             }
+
             if (File.Exists(specularFilePath))
             {
-                GenerateBitmapTexture(specularFilePath, ETextureType.SPECULAR);
+                this.GenerateBitmapTexture(specularFilePath, ETextureType.SPECULAR);
             }
+
             Framework.Log("All textures generated");
             worker.CancelAsync();
         }
@@ -203,22 +208,25 @@ namespace CRYENGINE_ImportHub
                     break;
             }
 
-            var finalFilePath = cibleDirectory + @"\" + projectName + finalFileSuffix;
+            var finalFilePath = this.cibleDirectory + @"\" + projectName + finalFileSuffix;
 
             if (File.Exists(finalFilePath))
             {
                 File.Delete(finalFilePath);
             }
 
-            while (!File.Exists(sourceTexturePath)) ;    // Wait until the source file is recreated
-            File.Copy(sourceTexturePath, finalFilePath);
-
-            new TextureTiffConvert(finalFilePath, true);
-
-            if (isForCrossAppMode)
-                Framework.FocusProcess("Editor");
-
-            File.Delete(finalFilePath);
+            var fileSystemWatcher = new FileSystemWatcher(sourceTexturePath);
+            fileSystemWatcher.Created += (object sender, FileSystemEventArgs e) =>
+                {
+                    File.Copy(sourceTexturePath, finalFilePath);
+                    new TextureTiffConvert(finalFilePath, true);
+                    if (isForCrossAppMode)
+                    {
+                        Framework.FocusProcess("Editor");
+                    }
+                    File.Delete(finalFilePath);
+                };
+            fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         private void GenerateTextureWithAlpha(string sourceTexturePath, string sourceAlphaMaskPath, ETextureType textureType)
@@ -240,8 +248,7 @@ namespace CRYENGINE_ImportHub
                     break;
             }
 
-            var finalFilePath = cibleDirectory + @"\" + projectName + finalFileSuffix;
-
+            var finalFilePath = this.cibleDirectory + @"\" + projectName + finalFileSuffix;
             while (!File.Exists(sourceTexturePath)) ;    // Wait until the source file is recreated
             while (!File.Exists(sourceAlphaMaskPath)) ;    // Wait until the source file is recreated
 
@@ -309,17 +316,30 @@ namespace CRYENGINE_ImportHub
             byte bpp2 = 4;
             byte bpp3 = 4;
 
-            if (fmt1 == PixelFormat.Format24bppRgb) bpp1 = 3;
-            else if (fmt1 == PixelFormat.Format32bppArgb) bpp1 = 4;
-            if (fmt2 == PixelFormat.Format24bppRgb) bpp2 = 3;
-            else if (fmt2 == PixelFormat.Format32bppArgb) bpp2 = 4;
+            if (fmt1 == PixelFormat.Format24bppRgb)
+            {
+                bpp1 = 3;
+            }
+            else if (fmt1 == PixelFormat.Format32bppArgb)
+            {
+                bpp1 = 4;
+            }
+
+            if (fmt2 == PixelFormat.Format24bppRgb)
+            {
+                bpp2 = 3;
+            }
+            else if (fmt2 == PixelFormat.Format32bppArgb)
+            {
+                bpp2 = 4;
+            }
 
             int size1 = bmp1Data.Stride * bmp1Data.Height;
             int size2 = bmp2Data.Stride * bmp2Data.Height;
             int size3 = bmp3Data.Stride * bmp3Data.Height;
-            byte[] data1 = new byte[size1];
-            byte[] data2 = new byte[size2];
-            byte[] data3 = new byte[size3];
+            var data1 = new byte[size1];
+            var data2 = new byte[size2];
+            var data3 = new byte[size3];
             System.Runtime.InteropServices.Marshal.Copy(bmp1Data.Scan0, data1, 0, size1);
             System.Runtime.InteropServices.Marshal.Copy(bmp2Data.Scan0, data2, 0, size2);
             System.Runtime.InteropServices.Marshal.Copy(bmp3Data.Scan0, data3, 0, size3);
@@ -334,11 +354,21 @@ namespace CRYENGINE_ImportHub
                     Color c1, c2;
 
                     if (bpp1 == 4)
+                    {
                         c1 = Color.FromArgb(data1[index1 + 3], data1[index1 + 2], data1[index1 + 1], data1[index1 + 0]);
-                    else c1 = Color.FromArgb(255, data1[index1 + 2], data1[index1 + 1], data1[index1 + 0]);
+                    }
+                    else
+                    {
+                        c1 = Color.FromArgb(255, data1[index1 + 2], data1[index1 + 1], data1[index1 + 0]);
+                    }
                     if (bpp2 == 4)
+                    {
                         c2 = Color.FromArgb(data2[index2 + 3], data2[index2 + 2], data2[index2 + 1], data2[index2 + 0]);
-                    else c2 = Color.FromArgb(255, data2[index2 + 2], data2[index2 + 1], data2[index2 + 0]);
+                    }
+                    else
+                    {
+                        c2 = Color.FromArgb(255, data2[index2 + 2], data2[index2 + 1], data2[index2 + 0]);
+                    }
 
                     byte A = (byte)(255 * c2.GetBrightness());
                     data3[index3 + 0] = c1.B;
